@@ -30,7 +30,7 @@ const index = () => {
       .catch((err) => {
         if (err?.response?.status === 403) {
           return toast("Login yoki parol xato!", { type: "error" });
-        }else {
+        } else {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
@@ -50,7 +50,7 @@ const index = () => {
       </div>
       <form onSubmit={handleLogIn} className="w-full md:w-1/3 max-w-sm">
         <div className="text-center md:text-left mb-5">
-          <h2 className="text-4xl font-semibold md:text-5xl">Log In</h2>
+          <h2 className="text-4xl font-semibold md:text-5xl">Kirish</h2>
         </div>
         <input
           required
@@ -60,14 +60,14 @@ const index = () => {
           placeholder="Username"
           title="Enter username"
         />
-          <input
-            required
-            type="password"
-            name="password"
-            title="Enter password"
-            placeholder="********"
-            className="input input-bordered w-full"
-          />
+        <input
+          required
+          type="password"
+          name="password"
+          title="Enter password"
+          placeholder="********"
+          className="input input-bordered w-full"
+        />
         <div className="mt-4 flex justify-between font-semibold text-sm">
           <label className="flex text-slate-500 hover:text-slate-600 cursor-pointer">
             <input
@@ -75,7 +75,7 @@ const index = () => {
               type="checkbox"
               name="remember"
             />
-            <span>Remember Me</span>
+            <span>Yodda saqlash</span>
           </label>
           <button hidden className="link link-hover link-primary">
             Forgot Password?
@@ -88,7 +88,7 @@ const index = () => {
             type="submit"
           >
             {!loading ? (
-              "Login"
+              "Kirish"
             ) : (
               <span className="fa-solid fa-spinner fa-spin-pulse" />
             )}
