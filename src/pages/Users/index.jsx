@@ -6,8 +6,44 @@ import { updateUsers } from "../../redux";
 
 const index = () => {
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [users, setUsers] = useState();
   const dispatch = useDispatch();
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    setBtnLoading(true);
+
+    let { name, email, username, password } = e.target;
+    let data = {
+      name: name.value,
+      email: email.value,
+      login: username.value,
+      password: password.value,
+    };
+
+    let response = await axios
+      .post("/register", data)
+      .catch((err) => {
+        if (err?.response?.status === 400) {
+          return toast("Bu Username yoki Email allaqachon ro'yxatdan o'tgan!", {
+            type: "error",
+          });
+        } else if (err?.response?.status === 500) {
+          return toast("Serverda xato!", { type: "error" });
+        } else {
+          return toast("Nimadadir xatolik ketdi!", { type: "error" });
+        }
+      })
+      .finally(() => setBtnLoading(false));
+
+    if (response.status === 200) {
+      getUsers();
+      return toast("Foydalanuvchi muvaffaqiyatli qo'shildi", {
+        type: "success",
+      });
+    }
+  }
 
   async function getUsers() {
     let response = await axios
@@ -56,6 +92,93 @@ const index = () => {
 
   return (
     <>
+      {/* Add new uesr */}
+      <div className="mb-5">
+        <h3 className="text-3xl md:text-4xl font-semibold">
+          Yangi foydalanuvchi qo'shish:
+        </h3>
+        <form
+          onSubmit={handleRegister}
+          className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
+        >
+          <div>
+            <label htmlFor="name" className="label">
+              Ism Familiya:
+            </label>
+            <input
+              required
+              type="text"
+              name="name"
+              id="name"
+              title="Ismni kiriting"
+              placeholder="To'liq ism"
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="degree" className="label">
+              Email:
+            </label>
+            <input
+              required
+              type="email"
+              name="email"
+              id="email"
+              title="Email kiriting"
+              placeholder="Email"
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="username" className="label">
+              Username:
+            </label>
+            <input
+              required
+              type="text"
+              name="username"
+              id="username"
+              title="Username"
+              placeholder="Username"
+              minLength={5}
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="label">
+              Parol:
+            </label>
+            <input
+              required
+              type="password"
+              name="password"
+              id="password"
+              title="Parol"
+              placeholder="********"
+              minLength={5}
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div className="w-full flex items-center gap-3">
+            <button
+              disabled={btnLoading}
+              type="submit"
+              className="w-9/12 btn btn-primary"
+            >
+              {btnLoading ? (
+                <span className="fa-solid fa-spinner fa-spin-pulse" />
+              ) : (
+                "Yuborish"
+              )}
+            </button>
+            <button type="reset" className="w-2/12 btn btn-error ml-2">
+              <span className="fa-solid fa-arrow-rotate-left" />
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Users table */}
       <div className="relative overflow-auto max-h-[88vh]">
         {loading ? (
           <div className="grid place-items-center">

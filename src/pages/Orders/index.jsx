@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const index = () => {
   const token = sessionStorage.getItem("banner-token");
   const orderEditModal = useRef();
+  const navigate = useNavigate();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [orderInfo, setOrderInfo] = useState();
@@ -176,7 +178,9 @@ const index = () => {
               name="user_id"
               id="user"
               className="w-full select select-bordered select-primary"
+              onChange={(e) => e.target.value === "new" && navigate("/users")}
             >
+              <option value={""} selected disabled></option>
               {data?.users?.map?.((user, ind) => {
                 return (
                   <option key={ind} value={user?.id}>
@@ -184,6 +188,9 @@ const index = () => {
                   </option>
                 );
               })}
+              <option value={"new"} className="text-black/50">
+                + Yangi foydalanuvchi qo'shish
+              </option>
             </select>
           </div>
           <div>
