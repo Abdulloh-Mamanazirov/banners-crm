@@ -17,7 +17,7 @@ const index = ({ content }) => {
 
   async function handleLogOut() {
     sessionStorage.removeItem("banner-token");
-    return window.location.replace('/login')
+    return window.location.replace("/login");
   }
 
   return (
@@ -45,7 +45,11 @@ const index = ({ content }) => {
                 <span className="fa-regular fa-chart-bar" />
               </label>
               <div className="ml-auto mb-1">
-                <button onClick={handleLogOut} className="btn btn-error" title="Log Out">
+                <button
+                  onClick={handleLogOut}
+                  className="btn btn-error"
+                  title="Log Out"
+                >
                   <span className="fa-solid fa-right-from-bracket text-white" />
                 </button>
               </div>
@@ -79,6 +83,32 @@ const index = ({ content }) => {
                 </Link>
               </li>
             ))}
+            <details open className="ml-5">
+              <summary className="">&nbsp;Moliya</summary>
+              <ul className="mt-2">
+                <li
+                  className={`mb-2 ${
+                    pathname === "/income" &&
+                    "bg-blue-400 rounded-lg bg-opacity-10"
+                  }`}
+                >
+                  <Link to={"/income"}>
+                    <span className={"fa-solid fa-hand-holding-dollar"} />{" "}
+                    {"Kirim"}
+                  </Link>
+                </li>
+                <li
+                  className={`mb-2 ${
+                    pathname === "/outcome" &&
+                    "bg-blue-400 rounded-lg bg-opacity-10"
+                  }`}
+                >
+                  <Link to={"/outcome"}>
+                    <span className={"fa-solid fa-money-bill"} /> {"Chiqim"}
+                  </Link>
+                </li>
+              </ul>
+            </details>
             <div className="mt-auto border-t border-gray-400">
               <button
                 onClick={handleLogOut}

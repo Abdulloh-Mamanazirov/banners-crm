@@ -9,6 +9,8 @@ import {
   Create,
   Orders,
   NotFound,
+  Income,
+  Outcome,
 } from "./pages";
 import Layout from "./layout";
 
@@ -39,6 +41,8 @@ function App() {
               <Route path="/banners" element={<Banners />} />
               <Route path="/banners/add" element={<Create />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/income" element={<Income />} />
+              <Route path="/outcome" element={<Outcome />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
           }
