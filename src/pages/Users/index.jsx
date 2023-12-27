@@ -78,6 +78,14 @@ const index = () => {
               </tr>
             </thead>
             <tbody>
+              {users?.length === 0 && (
+                <tr className="text-center">
+                  <td colSpan={6} className="text-center">
+                    <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
+                    <p>Foydalanuvchilar mavjud emas</p>
+                  </td>
+                </tr>
+              )}
               {users?.map?.((user, ind) => (
                 <tr key={ind} className="hover">
                   <th>{ind + 1}</th>

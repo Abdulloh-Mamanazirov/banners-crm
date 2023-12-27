@@ -37,7 +37,7 @@ const index = () => {
 
   async function getUsers() {
     let response = await axios.patch(`/${token}/users/get`).catch((err) => {
-      if (err) return 
+      if (err) return;
     });
 
     if (response?.status === 200) {
@@ -55,7 +55,9 @@ const index = () => {
         if (err?.response?.status === 500) {
           return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
         } else if (err?.response?.status === 401) {
-          toast("Siz buyurtmalar ro'yxatini ko'ra olmaysiz!", { type: "warning" });
+          toast("Siz buyurtmalar ro'yxatini ko'ra olmaysiz!", {
+            type: "warning",
+          });
         }
       })
       .finally(() => setListLoading(false));
@@ -133,11 +135,11 @@ const index = () => {
         } else {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
-      })
+      });
 
     if (response?.data?.code === 200) {
       getOrders();
-      orderEditModal.current.close()
+      orderEditModal.current.close();
       return toast("Buyurtma tahrirlandi!", { type: "info" });
     }
   }
@@ -150,7 +152,7 @@ const index = () => {
       });
     if (response.status === 200) {
       toast("Buyurtma o'chirildi", { type: "info" });
-      return getOrders()
+      return getOrders();
     }
   }
 
@@ -282,6 +284,14 @@ const index = () => {
               </tr>
             </thead>
             <tbody>
+              {data?.orders?.length === 0 && (
+                <tr className="text-center">
+                  <td colSpan={6} className="text-center">
+                    <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
+                    <p>Buyurtmalar mavjud emas</p>
+                  </td>
+                </tr>
+              )}
               {data?.orders?.map?.((order, ind) => (
                 <tr className="hover" key={ind}>
                   <th>{ind + 1}</th>
