@@ -2,6 +2,7 @@ import { Bar } from "react-chartjs-2";
 import { Chart } from "chart.js/auto";
 
 const index = ({ monthly, title, color }) => {
+  monthly = monthly.sort((a, b) => a.month - b.month);
   function getMonth(month) {
     switch (month) {
       case "1":

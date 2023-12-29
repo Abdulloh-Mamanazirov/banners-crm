@@ -14,12 +14,10 @@ const index = () => {
     e.preventDefault();
     setBtnLoading(true);
 
-    let { name, email, username, password } = e.target;
+    let { name, email } = e.target;
     let data = {
       name: name.value,
       email: email.value,
-      login: username.value,
-      password: password.value,
     };
 
     let response = await axios
@@ -126,36 +124,6 @@ const index = () => {
               id="email"
               title="Email kiriting"
               placeholder="Email"
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="username" className="label">
-              Username:
-            </label>
-            <input
-              required
-              type="text"
-              name="username"
-              id="username"
-              title="Username"
-              placeholder="Username"
-              minLength={5}
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="label">
-              Parol:
-            </label>
-            <input
-              required
-              type="password"
-              name="password"
-              id="password"
-              title="Parol"
-              placeholder="********"
-              minLength={5}
               className="w-full input input-bordered input-primary"
             />
           </div>
