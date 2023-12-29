@@ -179,7 +179,7 @@ const index = () => {
       </div>
 
       {/* Users table */}
-      <div className="relative overflow-auto max-h-[88vh]">
+      <div className="relative overflow-auto max-h-[88vh] max-w-[88vw]">
         {loading ? (
           <div className="grid place-items-center">
             <div className="text-center">

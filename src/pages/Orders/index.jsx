@@ -271,7 +271,7 @@ const index = () => {
       </div>
 
       {/* Orders table */}
-      <div className="relative overflow-auto max-h-[90vh]">
+      <div className="relative overflow-auto max-h-[90vh] max-w-[88vw]">
         {listLoading ? (
           <div className="text-center">
             <span className="loading loading-bars loading-lg" />
@@ -303,9 +303,11 @@ const index = () => {
                 <tr className="hover" key={ind}>
                   <th>{ind + 1}</th>
                   <td>
-                    {data?.banners?.map?.((b) => {
-                      if (b.id === order.banner_id) return <>{b?.name}</>;
-                    })}
+                    <p className="whitespace-nowrap">
+                      {data?.banners?.map?.((b) => {
+                        if (b.id == order.banner_id) return <>{b?.name}</>;
+                      })}
+                    </p>
                     <p>
                       (
                       {order?.side_a === "tanlandi" &&
@@ -321,7 +323,7 @@ const index = () => {
                   </td>
                   <td>
                     {data?.users?.map?.((u) => {
-                      if (u.id === order.user_id) return <>{u?.name}</>;
+                      if (u.id == order.user_id) return <>{u?.name}</>;
                     })}
                   </td>
                   <td>{order?.created_at.slice(0, 10)}</td>

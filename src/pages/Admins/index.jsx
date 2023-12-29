@@ -64,14 +64,14 @@ const index = () => {
         if (err?.response?.status === 500) {
           toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
         } else if (err?.response?.status === 403) {
-          if(
+          if (
             err?.response?.data?.message ===
-              "You have no permission to create this"
-          ){
+            "You have no permission to create this"
+          ) {
             toast("Siz bu amalni bajara olmaysiz!", { type: "warning" });
-          }else{
+          } else {
             toast("Bunday username mavjud!", { type: "error" });
-          };
+          }
         } else {
           toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
@@ -224,7 +224,7 @@ const index = () => {
       </div>
 
       {/* Admins table */}
-      <div className="relative overflow-auto max-h-[90vh]">
+      <div className="relative overflow-auto max-h-[90vh] max-w-[88vw]">
         {tableLoading ? (
           <div className="text-center">
             <span className="loading loading-bars loading-lg" />
