@@ -6,12 +6,12 @@ const index = () => {
       <div>
         <img src={NotFound} alt="Page Not Found" className="max-w-sm" />
         <div>
-          <p>Page you are looking for does not exist</p>
+          <p>Siz kirgan sahifa mavjud emas</p>
           <button
             onClick={() => window.navigation.back()}
             className="btn btn-info mt-3"
           >
-            Go Back
+            Orqaga
           </button>
         </div>
       </div>

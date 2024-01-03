@@ -11,6 +11,7 @@ import {
   NotFound,
   Income,
   Outcome,
+  FinanceLogs,
 } from "./pages";
 import Layout from "./layout";
 
@@ -43,6 +44,7 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/income" element={<Income />} />
               <Route path="/outcome" element={<Outcome />} />
+              <Route path="/logs" element={<FinanceLogs />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
           }

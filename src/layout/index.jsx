@@ -93,8 +93,7 @@ const index = ({ content }) => {
                   }`}
                 >
                   <Link to={"/income"}>
-                    <span className={"fa-solid fa-hand-holding-dollar"} />{" "}
-                    {"Kirim"}
+                    <span className={"fa-solid fa-money-bill"} /> {"Kirim"}
                   </Link>
                 </li>
                 <li
@@ -104,7 +103,19 @@ const index = ({ content }) => {
                   }`}
                 >
                   <Link to={"/outcome"}>
-                    <span className={"fa-solid fa-money-bill"} /> {"Chiqim"}
+                    <span className={"fa-solid fa-hand-holding-dollar"} />{" "}
+                    {"Chiqim"}
+                  </Link>
+                </li>
+                <li
+                  className={`mb-2 ${
+                    pathname === "/logs" &&
+                    "bg-blue-400 rounded-lg bg-opacity-10"
+                  }`}
+                >
+                  <Link to={"/logs"}>
+                    <span className={"fa-solid fa-history"} />{" "}
+                    {"Amallar tarixi"}
                   </Link>
                 </li>
               </ul>
