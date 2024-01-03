@@ -14,17 +14,18 @@ const index = () => {
     e.preventDefault();
     setBtnLoading(true);
 
-    let { name, email } = e.target;
+    let { name, phone } = e.target;
     let data = {
       name: name.value,
-      email: email.value,
+      phone: phone.value,
+      password: Math.random(),
     };
 
     let response = await axios
-      .post("/register", data)
+      .post(`${sessionStorage.getItem("banner-token")}/users/create`, data)
       .catch((err) => {
         if (err?.response?.status === 400) {
-          return toast("Bu Username yoki Email allaqachon ro'yxatdan o'tgan!", {
+          return toast("Kiritilgan ma'lumotlar allaqachon foydalanilgan!", {
             type: "error",
           });
         } else if (err?.response?.status === 500) {
@@ -115,15 +116,15 @@ const index = () => {
           </div>
           <div>
             <label htmlFor="degree" className="label">
-              Email:
+              Tel. raqam:
             </label>
             <input
               required
-              type="email"
-              name="email"
-              id="email"
-              title="Email kiriting"
-              placeholder="Email"
+              type="phone"
+              name="phone"
+              id="phone"
+              title="Tel. raqam kiriting"
+              placeholder="+998 90 123 45 67"
               className="w-full input input-bordered input-primary"
             />
           </div>
@@ -161,10 +162,8 @@ const index = () => {
               <tr className="bg-base-300 text-sm">
                 <th>#</th>
                 <th>To'liq Ismi</th>
-                <th>Email</th>
-                <th>Username</th>
+                <th>Tel. raqam</th>
                 <th>Sana</th>
-                <th>Tasdiqlangan</th>
                 <th></th>
               </tr>
             </thead>
@@ -182,17 +181,9 @@ const index = () => {
                   <th>{ind + 1}</th>
                   <td>{user?.name}</td>
                   <td>
-                    <a href={`mailto:${user?.email}`}>{user?.email}</a>
+                    <a href={`tel:${user?.phone}`}>{user?.phone}</a>
                   </td>
-                  <td>{user?.login}</td>
                   <td>{user?.created_at.slice(0, 10)}</td>
-                  <td>
-                    {user?.verified === "1" ? (
-                      <span className="badge badge-success ">✓</span>
-                    ) : (
-                      <span className="badge badge-error ">×</span>
-                    )}
-                  </td>
                   <td>
                     <button
                       onClick={() => handleDeleteUser(user)}
