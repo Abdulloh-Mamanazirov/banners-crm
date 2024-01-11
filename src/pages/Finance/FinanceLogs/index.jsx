@@ -43,7 +43,7 @@ const index = () => {
               <th>#</th>
               <th>Admin ismi</th>
               <th>Bajarilgan amal</th>
-              <th>Vaqti</th>
+              <th className="w-32">Vaqti</th>
             </tr>
           </thead>
           <tbody>
