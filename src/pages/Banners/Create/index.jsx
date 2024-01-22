@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Placeholder } from "../../../assets";
 import { ImageInput, Location } from "../../../components";
 import { updateImage } from "../../../redux";
 
 const index = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [images, setImages] = useState({
     cover: Placeholder,
@@ -48,6 +50,7 @@ const index = () => {
         setLoading(false);
       });
     if (response?.status === 201) {
+      navigate("/banners");
       toast("Banner qo'shildi", { type: "success" });
     }
   }

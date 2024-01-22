@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { updateAdmins } from "../../redux";
 
@@ -11,11 +10,7 @@ const index = () => {
   const [adminInfo, setAdminInfo] = useState();
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams({
-    q: "",
-    degree: "",
-  });
-
+  const [nextPage, setNextPage] = useState(null);
   const dispatch = useDispatch();
 
   async function getAdmins() {
@@ -35,8 +30,32 @@ const index = () => {
       .finally(() => setTableLoading(false));
 
     if (response?.status === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
       dispatch(updateAdmins(response?.data?.data?.data?.length));
       return setAdmins(response?.data?.data?.data);
+    }
+  }
+
+  async function loadNextPage() {
+    let response = await axios
+      .patch(nextPage)
+      .catch(async (err) => {
+        if (err?.response?.data?.code === 403) {
+          return toast("Siz adminlar ro'yxatini ko'ra olmaysiz!", {
+            type: "warning",
+          });
+        } else if (err?.response?.data?.code === 500) {
+          return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
+        } else {
+          return toast("Nimadadir xatolik ketdi!", { type: "error" });
+        }
+      })
+      .finally(() => setTableLoading(false));
+
+    if (response?.data?.code === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
+      setAdmins((old) => [...old, ...response?.data?.data?.data]);
+      dispatch(updateAdmins(admins?.length));
     }
   }
 
@@ -231,54 +250,65 @@ const index = () => {
             <p>Adminlar yuklanmoqda...</p>
           </div>
         ) : (
-          <table className="table table-pin-rows table-xs md:table-md">
-            <thead>
-              <tr className="bg-base-200 md:text-sm">
-                <th>#</th>
-                <th>To'liq ismi</th>
-                <th>Username</th>
-                <th>Saylangan sana</th>
-                <th>Darajasi</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {admins?.map?.((admin, ind) => (
-                <tr className="hover" key={ind}>
-                  <th>{ind + 1}</th>
-                  <td>{admin?.name}</td>
-                  <td>{admin?.login}</td>
-                  <td>{admin?.created_at.slice(0, 10)}</td>
-                  <td>
-                    {admin?.degree === "3"
-                      ? "Eng yuqori"
-                      : admin?.degree === "2"
-                      ? "O'rta"
-                      : "Past"}
-                  </td>
-                  <td>
-                    <button
-                      className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
-                      data-tip="Tahrirlash"
-                      onClick={() => {
-                        setAdminInfo(admin);
-                        adminEditModal.current.showModal();
-                      }}
-                    >
-                      <span className="fa-solid fa-edit" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAdmin(admin)}
-                      className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
-                      data-tip="O'chirish"
-                    >
-                      <span className="fa-solid fa-trash-can" />
-                    </button>
-                  </td>
+          <>
+            <table className="table table-pin-rows table-xs md:table-md">
+              <thead>
+                <tr className="bg-base-200 md:text-sm">
+                  <th>#</th>
+                  <th>To'liq ismi</th>
+                  <th>Username</th>
+                  <th>Saylangan sana</th>
+                  <th>Darajasi</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {admins?.map?.((admin, ind) => (
+                  <tr className="hover" key={ind}>
+                    <th>{ind + 1}</th>
+                    <td>{admin?.name}</td>
+                    <td>{admin?.login}</td>
+                    <td>{admin?.created_at.slice(0, 10)}</td>
+                    <td>
+                      {admin?.degree === "3"
+                        ? "Eng yuqori"
+                        : admin?.degree === "2"
+                        ? "O'rta"
+                        : "Past"}
+                    </td>
+                    <td>
+                      <button
+                        className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
+                        data-tip="Tahrirlash"
+                        onClick={() => {
+                          setAdminInfo(admin);
+                          adminEditModal.current.showModal();
+                        }}
+                      >
+                        <span className="fa-solid fa-edit" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteAdmin(admin)}
+                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
+                        data-tip="O'chirish"
+                      >
+                        <span className="fa-solid fa-trash-can" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <button
+              onClick={loadNextPage}
+              className={`mt-5 w-full btn btn-outline capitalize text-lg ${
+                nextPage === null && "hidden"
+              }`}
+            >
+              Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
+            </button>
+          </>
         )}
       </div>
 

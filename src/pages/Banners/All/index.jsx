@@ -9,6 +9,7 @@ import { updateBillboards } from "../../../redux";
 const index = () => {
   const [loading, setLoading] = useState(true);
   const [banners, setBanners] = useState();
+  const [nextPage, setNextPage] = useState();
   const dispatch = useDispatch();
   const { billboards } = useSelector((state) => state.stats);
 
@@ -34,6 +35,7 @@ const index = () => {
 
     if (response?.data?.code === 200) {
       dispatch(updateBillboards(response?.data?.data?.data?.length));
+      setNextPage(response?.data?.data?.next_page_url);
       setBanners(response?.data?.data?.data);
     }
   }
@@ -42,6 +44,33 @@ const index = () => {
     getBanners();
   }, [billboards]);
 
+  async function loadNextPage() {
+    let response = await axios
+      .request({
+        url: nextPage,
+        method: "get",
+        params: {
+          token: sessionStorage.getItem("banner-token"),
+        },
+      })
+      .catch(async (err) => {
+        if (err?.response?.data?.code === 403) {
+          sessionStorage.removeItem("banner-token");
+          return window.location.replace("/login");
+        } else {
+          await getBanners();
+          toast("Nimadadir xatolik ketdi!", { type: "error" });
+        }
+      })
+      .finally(() => setLoading(false));
+
+    if (response?.data?.code === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
+      setBanners((old) => [...old, ...response?.data?.data?.data]);
+      dispatch(updateBillboards(banners?.length));
+    }
+  }
+
   return (
     <div className="relative">
       {/* <div className="mb-3">
@@ -49,19 +78,29 @@ const index = () => {
         <div></div>
       </div> */}
       {!loading ? (
-        <div className="grid grid-cols-1 min-[500px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 items-center">
-          {banners?.map?.((banner, ind) => (
-            <BannerCard
-              key={ind}
-              data={banner}
-              id={banner?.id}
-              img={`https://api.abdullajonov.uz/banner-ads-backend/public/storage/banner/images/${banner?.image}`}
-              title={banner?.name}
-              state={banner?.is_busy}
-              date={banner?.created_at?.slice(0, 10).replaceAll("-", "/")}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 min-[500px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 items-center">
+            {banners?.map?.((banner, ind) => (
+              <BannerCard
+                key={ind}
+                data={banner}
+                id={banner?.id}
+                img={`https://api.abdullajonov.uz/banner-ads-backend/public/storage/banner/images/${banner?.image}`}
+                title={banner?.name}
+                state={banner?.is_busy}
+                date={banner?.created_at?.slice(0, 10).replaceAll("-", "/")}
+              />
+            ))}
+          </div>
+          <button
+            onClick={loadNextPage}
+            className={`mt-5 w-full btn btn-outline capitalize text-lg ${
+              nextPage === null && "hidden"
+            }`}
+          >
+            Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
+          </button>
+        </>
       ) : (
         <div className="absolute inset-0 grid place-items-center">
           <div className="text-center">

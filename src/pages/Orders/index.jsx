@@ -10,6 +10,7 @@ const index = () => {
   const [buttonLoading, setButtonLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [orderInfo, setOrderInfo] = useState();
+  const [nextPage, setNextPage] = useState(null);
   const [data, setData] = useState({
     orders: [],
     banners: [],
@@ -65,9 +66,33 @@ const index = () => {
       .finally(() => setListLoading(false));
 
     if (response?.data?.code === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
       return setData((prev) => ({
         ...prev,
         orders: response?.data?.data?.data,
+      }));
+    }
+  }
+
+  async function loadNextPage() {
+    let response = await axios
+      .patch(nextPage)
+      .catch(async (err) => {
+        if (err?.response?.data?.code === 403) {
+          sessionStorage.removeItem("banner-token");
+          return window.location.replace("/login");
+        } else {
+          await getBanners();
+          toast("Nimadadir xatolik ketdi!", { type: "error" });
+        }
+      })
+      .finally(() => setListLoading(false));
+
+    if (response?.data?.code === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
+      setData((old) => ({
+        ...old,
+        orders: [...old.orders, ...response?.data?.data?.data],
       }));
     }
   }
@@ -278,80 +303,90 @@ const index = () => {
             <p>Buyurtmalar yuklanmoqda...</p>
           </div>
         ) : (
-          <table className="table table-pin-rows table-xs md:table-md">
-            <thead>
-              <tr className="bg-base-200 md:text-sm">
-                <th>#</th>
-                <th>Banner</th>
-                <th>Buyurtmachi</th>
-                <th>Yaratilgan sana</th>
-                <th>Boshlanish vaqti</th>
-                <th>Tugash vaqti</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.orders?.length === 0 && (
-                <tr className="text-center">
-                  <td colSpan={6} className="text-center">
-                    <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
-                    <p>Buyurtmalar mavjud emas</p>
-                  </td>
+          <>
+            <table className="table table-pin-rows table-xs md:table-md">
+              <thead>
+                <tr className="bg-base-200 md:text-sm">
+                  <th>#</th>
+                  <th>Banner</th>
+                  <th>Buyurtmachi</th>
+                  <th>Yaratilgan sana</th>
+                  <th>Boshlanish vaqti</th>
+                  <th>Tugash vaqti</th>
+                  <th></th>
                 </tr>
-              )}
-              {data?.orders?.map?.((order, ind) => (
-                <tr className="hover" key={ind}>
-                  <th>{ind + 1}</th>
-                  <td>
-                    <p className="whitespace-nowrap">
-                      {data?.banners?.map?.((b) => {
-                        if (b.id == order.banner_id) return <>{b?.name}</>;
+              </thead>
+              <tbody>
+                {data?.orders?.length === 0 && (
+                  <tr className="text-center">
+                    <td colSpan={6} className="text-center">
+                      <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
+                      <p>Buyurtmalar mavjud emas</p>
+                    </td>
+                  </tr>
+                )}
+                {data?.orders?.map?.((order, ind) => (
+                  <tr className="hover" key={ind}>
+                    <th>{ind + 1}</th>
+                    <td>
+                      <p className="whitespace-nowrap">
+                        {data?.banners?.map?.((b) => {
+                          if (b.id == order.banner_id) return <>{b?.name}</>;
+                        })}
+                      </p>
+                      <p>
+                        (
+                        {order?.side_a === "tanlandi" &&
+                        order?.side_b === "tanlandi"
+                          ? "Ikkala taraf"
+                          : order?.side_a === "a tanlandi"
+                          ? "A taraf"
+                          : order?.side_b === "b tanlandi"
+                          ? "B taraf"
+                          : ""}
+                        )
+                      </p>
+                    </td>
+                    <td>
+                      {data?.users?.map?.((u) => {
+                        if (u.id == order.user_id) return <>{u?.name}</>;
                       })}
-                    </p>
-                    <p>
-                      (
-                      {order?.side_a === "tanlandi" &&
-                      order?.side_b === "tanlandi"
-                        ? "Ikkala taraf"
-                        : order?.side_a === "a tanlandi"
-                        ? "A taraf"
-                        : order?.side_b === "b tanlandi"
-                        ? "B taraf"
-                        : ""}
-                      )
-                    </p>
-                  </td>
-                  <td>
-                    {data?.users?.map?.((u) => {
-                      if (u.id == order.user_id) return <>{u?.name}</>;
-                    })}
-                  </td>
-                  <td>{order?.created_at.slice(0, 10)}</td>
-                  <td>{order?.start_time.slice(0, 16).replace("T", " ")}</td>
-                  <td>{order?.end_time.slice(0, 16).replace("T", " ")}</td>
-                  <td>
-                    <button
-                      className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
-                      data-tip="Tahrirlash"
-                      onClick={() => {
-                        setOrderInfo(order);
-                        orderEditModal.current.showModal();
-                      }}
-                    >
-                      <span className="fa-solid fa-edit" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteOrder(order?.id)}
-                      className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
-                      data-tip="O'chirish"
-                    >
-                      <span className="fa-solid fa-trash-can" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td>{order?.created_at.slice(0, 10)}</td>
+                    <td>{order?.start_time.slice(0, 16).replace("T", " ")}</td>
+                    <td>{order?.end_time.slice(0, 16).replace("T", " ")}</td>
+                    <td>
+                      <button
+                        className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
+                        data-tip="Tahrirlash"
+                        onClick={() => {
+                          setOrderInfo(order);
+                          orderEditModal.current.showModal();
+                        }}
+                      >
+                        <span className="fa-solid fa-edit" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteOrder(order?.id)}
+                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
+                        data-tip="O'chirish"
+                      >
+                        <span className="fa-solid fa-trash-can" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button
+              onClick={loadNextPage}
+              className={`mt-5 w-full btn btn-outline capitalize text-lg ${
+                nextPage === null && "hidden"
+              }`}
+            >
+              Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
+            </button>
+          </>
         )}
       </div>
 

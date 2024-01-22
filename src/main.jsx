@@ -23,6 +23,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Provider store={store}>
       <App />
     </Provider>
-    <ToastContainer autoClose={2500} />
+    <ToastContainer autoClose={2500} limit={3} />
   </BrowserRouter>
 );

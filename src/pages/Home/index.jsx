@@ -12,6 +12,7 @@ const index = () => {
     orders: <span className="fa-solid fa-spinner animate-spin" />,
     admins: <span className="fa-solid fa-spinner animate-spin" />,
     users: <span className="fa-solid fa-spinner animate-spin" />,
+    banners: <span className="fa-solid fa-spinner animate-spin" />,
   });
 
   async function getStats() {
@@ -51,6 +52,7 @@ const index = () => {
         orders: stats?.data?.data?.orders,
         users: stats?.data?.data?.users,
         admins: stats?.data?.data?.admins,
+        banners: stats?.data?.data?.banners,
       }));
     }
   }
@@ -62,17 +64,7 @@ const index = () => {
   return (
     <>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 items-center gap-3">
-        <Stats
-          img={Billboard}
-          title="Jami Bannerlar"
-          value={
-            loading ? (
-              <span className="fa-solid fa-spinner animate-spin" />
-            ) : (
-              stats.billboards.length
-            )
-          }
-        />
+        <Stats img={Billboard} title="Jami Bannerlar" value={stats.banners} />
         <Stats img={Ad} title="Jami Buyurtmalar" value={stats.orders} />
         <Stats img={User} title="Foydalanuvchilar" value={stats.users} />
         <Stats img={Admin} title="Adminlar" value={stats.admins} />

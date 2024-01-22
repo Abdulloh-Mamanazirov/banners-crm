@@ -7,6 +7,7 @@ import { updateUsers } from "../../redux";
 const index = () => {
   const [loading, setLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
+  const [nextPage, setNextPage] = useState(null);
   const [users, setUsers] = useState();
   const dispatch = useDispatch();
 
@@ -61,8 +62,30 @@ const index = () => {
       .finally(() => setLoading(false));
 
     if (response?.status === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
       dispatch(updateUsers(response?.data?.data?.data?.length));
       return setUsers(response?.data?.data?.data);
+    }
+  }
+
+  async function loadNextPage() {
+    let response = await axios
+      .patch(nextPage)
+      .catch(async (err) => {
+        if (err?.response?.data?.code === 403) {
+          sessionStorage.removeItem("banner-token");
+          return window.location.replace("/login");
+        } else {
+          await getBanners();
+          toast("Nimadadir xatolik ketdi!", { type: "error" });
+        }
+      })
+      .finally(() => setLoading(false));
+
+    if (response?.data?.code === 200) {
+      setNextPage(response?.data?.data?.next_page_url);
+      setUsers((old) => [...old, ...response?.data?.data?.data]);
+      dispatch(updateUsers(response?.data?.data?.data?.length));
     }
   }
 
@@ -157,46 +180,56 @@ const index = () => {
             </div>
           </div>
         ) : (
-          <table className="table table-pin-rows">
-            <thead>
-              <tr className="bg-base-300 text-sm">
-                <th>#</th>
-                <th>To'liq Ismi</th>
-                <th>Tel. raqam</th>
-                <th>Sana</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {users?.length === 0 && (
-                <tr className="text-center">
-                  <td colSpan={6} className="text-center">
-                    <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
-                    <p>Foydalanuvchilar mavjud emas</p>
-                  </td>
+          <>
+            <table className="table table-pin-rows">
+              <thead>
+                <tr className="bg-base-300 text-sm">
+                  <th>#</th>
+                  <th>To'liq Ismi</th>
+                  <th>Tel. raqam</th>
+                  <th>Sana</th>
+                  <th></th>
                 </tr>
-              )}
-              {users?.map?.((user, ind) => (
-                <tr key={ind} className="hover">
-                  <th>{ind + 1}</th>
-                  <td>{user?.name}</td>
-                  <td>
-                    <a href={`tel:${user?.phone}`}>{user?.phone}</a>
-                  </td>
-                  <td>{user?.created_at.slice(0, 10)}</td>
-                  <td>
-                    <button
-                      onClick={() => handleDeleteUser(user)}
-                      className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
-                      data-tip="O'chirish"
-                    >
-                      <span className="fa-solid fa-trash-can" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users?.length === 0 && (
+                  <tr className="text-center">
+                    <td colSpan={6} className="text-center">
+                      <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
+                      <p>Foydalanuvchilar mavjud emas</p>
+                    </td>
+                  </tr>
+                )}
+                {users?.map?.((user, ind) => (
+                  <tr key={ind} className="hover">
+                    <th>{ind + 1}</th>
+                    <td>{user?.name}</td>
+                    <td>
+                      <a href={`tel:${user?.phone}`}>{user?.phone}</a>
+                    </td>
+                    <td>{user?.created_at.slice(0, 10)}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteUser(user)}
+                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
+                        data-tip="O'chirish"
+                      >
+                        <span className="fa-solid fa-trash-can" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button
+              onClick={loadNextPage}
+              className={`mt-5 w-full btn btn-outline capitalize text-lg ${
+                nextPage === null && "hidden"
+              }`}
+            >
+              Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
+            </button>
+          </>
         )}
       </div>
     </>
