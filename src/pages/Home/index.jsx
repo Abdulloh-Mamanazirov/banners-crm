@@ -36,7 +36,7 @@ const index = () => {
     if (response?.data?.code === 200) {
       setStats((prev) => ({
         ...prev,
-        billboards: response?.data?.data?.data,
+        billboards: response?.data?.data,
       }));
     }
 

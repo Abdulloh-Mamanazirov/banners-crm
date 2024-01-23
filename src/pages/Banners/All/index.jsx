@@ -9,7 +9,6 @@ import { updateBillboards } from "../../../redux";
 const index = () => {
   const [loading, setLoading] = useState(true);
   const [banners, setBanners] = useState();
-  const [nextPage, setNextPage] = useState();
   const dispatch = useDispatch();
   const { billboards } = useSelector((state) => state.stats);
 
@@ -34,42 +33,14 @@ const index = () => {
       .finally(() => setLoading(false));
 
     if (response?.data?.code === 200) {
-      dispatch(updateBillboards(response?.data?.data?.data?.length));
-      setNextPage(response?.data?.data?.next_page_url);
-      setBanners(response?.data?.data?.data);
+      dispatch(updateBillboards(response?.data?.data?.length));
+      setBanners(response?.data?.data);
     }
   }
 
   useEffect(() => {
     getBanners();
   }, [billboards]);
-
-  async function loadNextPage() {
-    let response = await axios
-      .request({
-        url: nextPage,
-        method: "get",
-        params: {
-          token: sessionStorage.getItem("banner-token"),
-        },
-      })
-      .catch(async (err) => {
-        if (err?.response?.data?.code === 403) {
-          sessionStorage.removeItem("banner-token");
-          return window.location.replace("/login");
-        } else {
-          await getBanners();
-          toast("Nimadadir xatolik ketdi!", { type: "error" });
-        }
-      })
-      .finally(() => setLoading(false));
-
-    if (response?.data?.code === 200) {
-      setNextPage(response?.data?.data?.next_page_url);
-      setBanners((old) => [...old, ...response?.data?.data?.data]);
-      dispatch(updateBillboards(banners?.length));
-    }
-  }
 
   return (
     <div className="relative">
@@ -92,14 +63,6 @@ const index = () => {
               />
             ))}
           </div>
-          <button
-            onClick={loadNextPage}
-            className={`mt-5 w-full btn btn-outline capitalize text-lg ${
-              nextPage === null && "hidden"
-            }`}
-          >
-            Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
-          </button>
         </>
       ) : (
         <div className="absolute inset-0 grid place-items-center">

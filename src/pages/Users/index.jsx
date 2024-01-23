@@ -37,7 +37,9 @@ const index = () => {
       })
       .finally(() => setBtnLoading(false));
 
-    if (response.status === 200) {
+    if (response?.data?.code === 403) {
+      return toast("Siz bu amalni bajara olmaysiz!", { type: "warning" });
+    } else if (response.status === 200) {
       getUsers();
       return toast("Foydalanuvchi muvaffaqiyatli qo'shildi", {
         type: "success",

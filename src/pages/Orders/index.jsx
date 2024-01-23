@@ -33,7 +33,7 @@ const index = () => {
     if (response?.data?.code === 200) {
       return setData((prev) => ({
         ...prev,
-        banners: response?.data?.data?.data,
+        banners: response?.data?.data,
       }));
     }
   }
@@ -44,11 +44,50 @@ const index = () => {
     });
 
     if (response?.status === 200) {
-      return setData((prev) => ({
+      setData((prev) => ({
         ...prev,
         users: response?.data?.data?.data,
       }));
+
+      if (response?.data?.data?.next_page_url?.length > 0) {
+        let users1 = await getMoreUsers(response?.data?.data?.next_page_url);
+        setData((prev) => ({
+          ...prev,
+          users: [...prev.users, ...users1?.data],
+        }));
+
+        if (users1?.next_page_url?.length > 0) {
+          let users2 = await getMoreUsers(users1?.next_page_url);
+          setData((prev) => ({
+            ...prev,
+            users: [...prev.users, ...users2?.data],
+          }));
+
+          if (users2?.next_page_url?.length > 0) {
+            let users3 = await getMoreUsers(users2?.next_page_url);
+            setData((prev) => ({
+              ...prev,
+              users: [...prev.users, ...users3?.data],
+            }));
+
+            if (users3?.next_page_url?.length > 0) {
+              let users4 = await getMoreUsers(users3?.next_page_url);
+              setData((prev) => ({
+                ...prev,
+                users: [...prev.users, ...users4?.data],
+              }));
+            }
+          }
+        }
+      }
     }
+  }
+
+  async function getMoreUsers(url) {
+    let response = await axios.patch(url).catch((err) => {
+      return false;
+    });
+    return response?.data?.data;
   }
 
   async function getOrders() {
