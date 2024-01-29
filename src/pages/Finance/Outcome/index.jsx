@@ -42,7 +42,7 @@ const index = () => {
       });
 
     if (response?.data?.code === 200) {
-      return setBanners(response?.data?.data?.data);
+      return setBanners(response?.data?.data);
     }
   }
 
