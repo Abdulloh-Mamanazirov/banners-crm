@@ -4,7 +4,7 @@ import { Chart } from "chart.js/auto";
 const index = ({ monthly, title, color }) => {
   monthly = monthly.sort((a, b) => a.month - b.month);
   function getMonth(month) {
-    switch (month) {
+    switch (String(month)) {
       case "1":
         return "Yanvar";
       case "2":
