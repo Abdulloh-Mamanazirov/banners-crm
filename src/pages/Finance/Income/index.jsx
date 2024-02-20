@@ -2,7 +2,8 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { BarChart, BarChartYearly } from "../../../components";
+import { BarChartYearly } from "../../../components";
+import BarChart from "./BarChart";
 
 const index = () => {
   const token = sessionStorage.getItem("banner-token");
@@ -59,6 +60,7 @@ const index = () => {
       contract_start_date,
       contract_end_date,
       price,
+      pre_paid,
     } = e.target;
     let data = {
       banner_id: banner_id.value,
@@ -70,6 +72,7 @@ const index = () => {
         .toLocaleString("ru-Ru")
         .slice(0, 10),
       price: price.value,
+      pre_paid: pre_paid.value,
       type: "income",
     };
 
@@ -136,19 +139,35 @@ const index = () => {
               className="w-full input input-bordered input-primary"
             />
           </div>
-          <div>
-            <label htmlFor="price" className="label">
-              To'lov narxi:
-            </label>
-            <input
-              required
-              type="number"
-              name="price"
-              id="price"
-              title="Narxi"
-              minLength={100}
-              className="w-full input input-bordered input-primary"
-            />
+          <div className="flex items-center gap-2">
+            <div>
+              <label htmlFor="price" className="label">
+                To'lov (Oylik):
+              </label>
+              <input
+                required
+                type="number"
+                name="price"
+                id="price"
+                title="Narxi"
+                minLength={100}
+                className="w-full input input-bordered input-primary"
+              />
+            </div>
+            <div>
+              <label htmlFor="pre_paid" className="label">
+                Oldindan to'lov:
+              </label>
+              <input
+                required
+                type="number"
+                name="pre_paid"
+                id="pre_paid"
+                title="Oldindan to'lov"
+                minLength={100}
+                className="w-full input input-bordered input-primary"
+              />
+            </div>
           </div>
           <div>
             <label htmlFor="contract_start_date" className="label">
