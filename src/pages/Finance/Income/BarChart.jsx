@@ -38,14 +38,14 @@ const index = ({ monthly, title, color }) => {
       {
         label: title,
         backgroundColor: color,
-        data: monthly?.map((item) => item?.total_income),
+        data: monthly?.map((item) => item?.price),
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
       {
         label: "Oldindan to'lov",
         backgroundColor: "darkblue",
-        data: monthly?.map((item) => item?.already_taken),
+        data: monthly?.map((item) => item?.pre_paid),
         categoryPercentage: 0.9,
         barPercentage: 1,
       },

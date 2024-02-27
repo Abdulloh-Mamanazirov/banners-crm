@@ -59,7 +59,7 @@ const index = () => {
       company_name,
       contract_start_date,
       contract_end_date,
-      price,
+      // price,
       pre_paid,
     } = e.target;
     let data = {
@@ -71,7 +71,7 @@ const index = () => {
       contract_end_date: new Date(contract_end_date.value)
         .toLocaleString("ru-Ru")
         .slice(0, 10),
-      price: price.value,
+      // price: price.value,
       pre_paid: pre_paid.value,
       type: "income",
     };
@@ -140,7 +140,7 @@ const index = () => {
             />
           </div>
           <div className="flex items-center gap-2">
-            <div>
+            {/* <div>
               <label htmlFor="price" className="label">
                 To'lov (Oylik):
               </label>
@@ -153,10 +153,11 @@ const index = () => {
                 minLength={100}
                 className="w-full input input-bordered input-primary"
               />
-            </div>
-            <div>
+            </div> */}
+            <div className="w-full">
               <label htmlFor="pre_paid" className="label">
-                Oldindan to'lov:
+                {/* Oldindan to'lov: */}
+                To'lov (oldindan):
               </label>
               <input
                 required

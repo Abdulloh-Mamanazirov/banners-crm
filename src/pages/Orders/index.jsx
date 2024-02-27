@@ -146,14 +146,17 @@ const index = () => {
     e.preventDefault();
     setButtonLoading(true);
 
-    let { user_id, banner_id, start_time, end_time, side } = e.target;
+    let { user_id, company, banner_id, start_time, end_time, side, price } =
+      e.target;
     let data = {
       user_id: user_id.value,
+      company_name: company.value,
       banner_id: banner_id.value,
-      start_time: start_time.value,
-      end_time: end_time.value,
+      start_time: new Date(start_time.value).toLocaleDateString("ru-Ru"),
+      end_time: new Date(end_time.value).toLocaleDateString("ru-Ru"),
       side_a: side.value,
       side_b: side.value,
+      price: price.value,
     };
     if (side.value === "a tanlandi") data.side_b = "";
     if (side.value === "b tanlandi") data.side_a = "";
@@ -258,6 +261,19 @@ const index = () => {
             </select>
           </div>
           <div>
+            <label htmlFor="company" className="label">
+              Kompaniya:
+            </label>
+            <input
+              required
+              type="text"
+              name="company"
+              id="company"
+              title="Kompaniya nomi"
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div>
             <label htmlFor="banner_id" className="label">
               Banner:
             </label>
@@ -312,6 +328,21 @@ const index = () => {
               type="datetime-local"
               name="end_time"
               id="end"
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="price" className="label">
+              Oldindan to'lov:
+            </label>
+            <input
+              required
+              type="number"
+              name="price"
+              id="price"
+              title="Oldindan to'lov"
+              minLength={100}
+              min={0}
               className="w-full input input-bordered input-primary"
             />
           </div>

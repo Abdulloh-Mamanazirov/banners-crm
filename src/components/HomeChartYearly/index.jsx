@@ -2,7 +2,7 @@ import { Bar } from "react-chartjs-2";
 import { Chart } from "chart.js/auto";
 
 const index = ({ yearly, title, color }) => {
-  yearly = yearly.sort((a, b) => a.year - b.year);
+  yearly = Object.values(yearly).sort((a, b) => a.year - b.year);
   const yearly_data = {
     labels: yearly?.map((item) => item?.year),
     datasets: [

@@ -90,7 +90,7 @@ const index = () => {
 
     if (response.status === 200) {
       getData();
-      return toast("Kirim muvaffaqiyatli qo'shildi", {
+      return toast("Chiqim muvaffaqiyatli qo'shildi", {
         type: "success",
       });
     }
