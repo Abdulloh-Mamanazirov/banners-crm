@@ -313,7 +313,7 @@ const index = () => {
             </label>
             <input
               required
-              type="datetime-local"
+              type="date"
               name="start_time"
               id="start"
               className="w-full input input-bordered input-primary"
@@ -325,7 +325,7 @@ const index = () => {
             </label>
             <input
               required
-              type="datetime-local"
+              type="date"
               name="end_time"
               id="end"
               className="w-full input input-bordered input-primary"
@@ -333,14 +333,14 @@ const index = () => {
           </div>
           <div>
             <label htmlFor="price" className="label">
-              Oldindan to'lov:
+              To'lov:
             </label>
             <input
               required
               type="number"
               name="price"
               id="price"
-              title="Oldindan to'lov"
+              title="To'lov"
               minLength={100}
               min={0}
               className="w-full input input-bordered input-primary"
@@ -513,7 +513,7 @@ const index = () => {
                   <td>
                     <input
                       required
-                      type="datetime-local"
+                      type="date"
                       name="start_time"
                       id="start"
                       className="w-full input input-bordered input-accent input-sm"
@@ -525,7 +525,7 @@ const index = () => {
                   <th>Tugash sanasi:</th>
                   <td>
                     <input
-                      type="datetime-local"
+                      type="date"
                       name="end_time"
                       id="end"
                       className="w-full input input-bordered input-accent input-sm"

@@ -158,7 +158,7 @@ const index = () => {
             </label>
             <input
               required
-              type="datetime-local"
+              type="date"
               name="contract_start_date"
               id="contract_start_date"
               title="Shartnoma boshlanish sanasini kiriting"
@@ -171,7 +171,7 @@ const index = () => {
             </label>
             <input
               required
-              type="datetime-local"
+              type="date"
               name="contract_end_date"
               id="contract_end_date"
               title="Shartnoma tugash sanasini kiriting"
