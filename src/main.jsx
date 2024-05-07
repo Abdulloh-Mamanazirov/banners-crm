@@ -14,9 +14,10 @@ import "leaflet/dist/leaflet.css";
 import "react-toastify/dist/ReactToastify.css";
 
 // axios
-axios.defaults.baseURL = "https://api.abdullajonov.uz/banner-ads-backend/api";
-// axios.defaults.baseURL = "http://192.168.1.156:8000/api";
-axios.defaults.headers.common.token = sessionStorage.getItem("banner-token");
+// axios.defaults.baseURL = "https://api.abdullajonov.uz/banner-ads-backend/api";
+axios.defaults.baseURL = "http://192.168.1.105:8000/api";
+axios.defaults.headers.common["Authorization"] =
+  "Token " + sessionStorage.getItem("banner-token");
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
