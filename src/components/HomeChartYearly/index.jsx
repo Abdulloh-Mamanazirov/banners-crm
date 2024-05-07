@@ -1,15 +1,19 @@
 import { Bar } from "react-chartjs-2";
 import { Chart } from "chart.js/auto";
+import { useLocation } from "react-router-dom";
 
 const index = ({ yearly, title, color }) => {
-  yearly = Object.values(yearly).sort((a, b) => a.year - b.year);
+  const { pathname } = useLocation();
+  // yearly = Object.values(yearly).sort((a, b) => a.year - b.year);
+  if (pathname === "/outcome") yearly.yearly_payment = yearly?.yearly_expenses;
+
   const yearly_data = {
-    labels: yearly?.map((item) => item?.year),
+    labels: [yearly.year],
     datasets: [
       {
         label: title,
         backgroundColor: color,
-        data: yearly?.map((item) => item?.total_income),
+        data: [yearly.yearly_payment],
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
