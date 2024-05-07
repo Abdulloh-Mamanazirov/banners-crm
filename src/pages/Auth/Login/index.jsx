@@ -23,23 +23,21 @@ const index = () => {
     let { username, password } = e.target;
 
     let { data } = await axios
-      .post("/login", {
-        login: username.value,
+      .post("/auth/", {
+        username: username.value,
         password: password.value,
       })
       .catch((err) => {
-        if (err?.response?.status === 403) {
+        if (Number(err.response.status) === 400) {
           return toast("Login yoki parol xato!", { type: "error" });
         } else {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setLoading(false));
-
-    if (Number(data?.code) === 200) {
-      sessionStorage.setItem("banner-token", data?.data?.remember_token);
-      toast("Muvaffaqiyatli kirildi.", { type: "success" });
-      return navigate("/");
+    if (data.token) {
+      sessionStorage.setItem("banner-token", data.token);
+      window.location.replace("/");
     }
   }
 
