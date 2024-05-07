@@ -2,7 +2,8 @@ import { Bar } from "react-chartjs-2";
 import { Chart } from "chart.js/auto";
 
 const index = ({ monthly, title, color }) => {
-  monthly = monthly.sort((a, b) => a.month - b.month);
+  // monthly = monthly.sort((a, b) => a.month - b.month);
+
   function getMonth(month) {
     switch (String(month)) {
       case "1":
@@ -33,12 +34,14 @@ const index = ({ monthly, title, color }) => {
   }
 
   const monthly_data = {
-    labels: monthly?.map((item) => getMonth(item?.month)),
+    labels: Object.keys(monthly?.monthly_expenses ?? {}).map((item) =>
+      getMonth(item)
+    ),
     datasets: [
       {
-        label: title,
-        backgroundColor: color,
-        data: monthly?.map((item) => item?.total_income),
+        label: "Chiqim",
+        backgroundColor: "red",
+        data: Object.values(monthly.monthly_expenses ?? {}),
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
