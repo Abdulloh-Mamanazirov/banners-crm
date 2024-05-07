@@ -35,7 +35,10 @@ const index = ({ banners }) => {
 
   function getMarkers() {
     banners.forEach((banner) => {
-      markers.push({location:JSON.parse(banner.location), name:banner.name});
+      markers.push({
+        location: [banner?.latitude, banner?.longitude],
+        name: banner?.name,
+      });
     });
   }
 
