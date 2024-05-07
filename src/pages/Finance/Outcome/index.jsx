@@ -5,94 +5,66 @@ import { toast } from "react-toastify";
 import { BarChart, BarChartYearly } from "../../../components";
 
 const index = () => {
-  const token = sessionStorage.getItem("banner-token");
   const [btnLoading, setBtnLoading] = useState(false);
-  const [banners, setBanners] = useState(false);
+  const [listLoading, setListLoading] = useState(true);
   const [stats, setStats] = useState({
     monthly: [],
-    yearly: [],
+    outcome: [],
   });
 
   async function getData() {
-    let { data: monthly } = await axios.post(
-      `/finance/${token}/monthly-outcome`
-    );
+    let { data: monthly } = await axios.get(`/outlays/monthly_expenses/`);
     setStats((old) => ({
       ...old,
-      monthly: monthly?.data,
+      monthly: monthly,
     }));
-    let { data: yearly } = await axios.post(`/finance/${token}/yearly-outcome`);
+
+    let { data: outcome } = await axios
+      .get(`/outlays/`)
+      .finally(() => setListLoading(false));
     setStats((old) => ({
       ...old,
-      yearly: yearly?.data,
+      outcome: outcome,
     }));
-  }
-
-  async function getBanners() {
-    let response = await axios
-      .request({
-        url: "/banner/get",
-        method: "get",
-        params: {
-          token,
-        },
-      })
-      .catch((err) => {
-        if (err) return;
-      });
-
-    if (response?.data?.code === 200) {
-      return setBanners(response?.data?.data);
-    }
   }
 
   useEffect(() => {
     getData();
-    getBanners();
   }, []);
 
   async function handleAddOutcome(e) {
     e.preventDefault();
     setBtnLoading(true);
 
-    let {
-      banner_id,
-      company_name,
-      contract_start_date,
-      contract_end_date,
-      price,
-    } = e.target;
+    let { amount } = e.target;
     let data = {
-      banner_id: banner_id.value,
-      company_name: company_name.value,
-      contract_start_date: new Date(contract_start_date.value)
-        .toLocaleString("ru-Ru")
-        .slice(0, 10),
-      contract_end_date: new Date(contract_end_date.value)
-        .toLocaleString("ru-Ru")
-        .slice(0, 10),
-      price: price.value,
-      type: "outcome",
+      outlay_amount: amount.value,
     };
 
     let response = await axios
-      .post(`/finance/${token}/store`, data)
+      .post(`/outlays/`, data)
       .catch((err) => {
-        if (err?.response?.status === 400) {
-          return;
-        } else if (err?.response?.status === 500) {
-          return toast("Serverda xato!", { type: "error" });
-        } else {
+        if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setBtnLoading(false));
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       getData();
       return toast("Chiqim muvaffaqiyatli qo'shildi", {
         type: "success",
       });
+    }
+  }
+
+  async function handleDeleteOutcome(id) {
+    let response = await axios.delete(`/outlays/${id}/`).catch((err) => {
+      if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
+    });
+    if (response.status === 204) {
+      toast("Chiqim o'chirildi", { type: "info" });
+      return getData();
     }
   }
 
@@ -106,75 +78,13 @@ const index = () => {
           className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
         >
           <div>
-            <label htmlFor="banner_id" className="label">
-              Banner:
-            </label>
-            <select
-              required
-              name="banner_id"
-              id="banner_id"
-              className="w-full select select-bordered select-primary"
-            >
-              {banners?.map?.((banner, ind) => {
-                return (
-                  <option key={ind} value={banner?.id}>
-                    {banner?.name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="company_name" className="label">
-              Kompaniya nomi:
+            <label htmlFor="amount" className="label">
+              Chiqim summasi:
             </label>
             <input
               required
-              type="text"
-              name="company_name"
-              id="company_name"
-              title="Kompaniya nomi"
-              placeholder="Kompaniya nomi"
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="price" className="label">
-              To'lov narxi:
-            </label>
-            <input
-              required
-              type="number"
-              name="price"
-              id="price"
-              title="Narxi"
-              minLength={100}
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="contract_start_date" className="label">
-              Boshlanish sanasi:
-            </label>
-            <input
-              required
-              type="date"
-              name="contract_start_date"
-              id="contract_start_date"
-              title="Shartnoma boshlanish sanasini kiriting"
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="contract_end_date" className="label">
-              Tugash sanasi:
-            </label>
-            <input
-              required
-              type="date"
-              name="contract_end_date"
-              id="contract_end_date"
-              title="Shartnoma tugash sanasini kiriting"
+              name="amount"
+              id="amount"
               className="w-full input input-bordered input-primary"
             />
           </div>
@@ -208,9 +118,71 @@ const index = () => {
           <BarChartYearly
             title={"Chiqim"}
             color={"rgb(256,0,0)"}
-            yearly={stats?.yearly}
+            yearly={stats?.monthly}
           />
         </div>
+      </div>
+      {/* payments list */}
+      <div className="mt-10 relative overflow-auto max-h-[90vh] max-w-[88vw]">
+        {listLoading ? (
+          <div className="text-center">
+            <span className="loading loading-bars loading-lg" />
+            <p>Chiqimlar yuklanmoqda...</p>
+          </div>
+        ) : (
+          <>
+            <table className="w-full table table-pin-rows table-xs md:table-md">
+              <thead>
+                <tr className="bg-base-200 md:text-sm">
+                  <th>#</th>
+                  <th>Chiqim miqdori</th>
+                  <th>Qo'shgan admin</th>
+                  <th>Sana</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats?.outcome?.length === 0 && (
+                  <tr className="text-center">
+                    <td colSpan={6} className="text-center">
+                      <h2 className="text-5xl uppercase font-bold">
+                        Bo'm bo'sh
+                      </h2>
+                      <p>Chiqim tarixi mavjud emas</p>
+                    </td>
+                  </tr>
+                )}
+                {stats?.outcome?.map?.((outcome, ind) => (
+                  <tr className="hover" key={ind}>
+                    <th>{ind + 1}</th>
+                    <td>{outcome?.outlay_amount}</td>
+                    <td>{outcome?.admin?.full_name}</td>
+                    <td>{outcome?.created_date.slice(0, 10)}</td>
+                    <td>
+                      {/* <button
+                        className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
+                        data-tip="Tahrirlash"
+                        onClick={() => {
+                          setOrderInfo(outcome);
+                          orderEditModal.current.showModal();
+                        }}
+                      >
+                        <span className="fa-solid fa-edit" />
+                      </button> */}
+                      <button
+                        onClick={() => handleDeleteOutcome(outcome?.id)}
+                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
+                        data-tip="O'chirish"
+                      >
+                        <span className="fa-solid fa-trash-can" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
     </>
   );

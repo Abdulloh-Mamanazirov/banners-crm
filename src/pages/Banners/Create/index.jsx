@@ -24,24 +24,20 @@ const index = () => {
     e.preventDefault();
     setLoading(true);
 
-    let { lat, lng, name, price_a, price_b, type, banner_id } = e.target;
+    let { lat, lng, name, type, banner_id } = e.target;
 
     let data = new FormData();
-    data.append("admin_token", sessionStorage.getItem("banner-token"));
     data.append("name", name.value);
-    data.append("location", JSON.stringify([lat.value, lng.value]));
-    data.append("image", images.formImage);
-    data.append("price_a", price_a.value);
-    data.append("price_b", price_b.value);
-    data.append("type", type.value);
+    data.append("latitude", lat.value);
+    data.append("longitude", lng.value);
+    data.append("banner_image", images.formImage);
+    data.append("banner_type", type.value);
     data.append("banner_id", banner_id.value);
 
     let response = await axios
-      .post("/banner/store", data)
+      .post("/banners/", data)
       .catch((err) => {
-        if (err?.response?.status === 401) {
-          toast("Siz bu amalni bajara olmaysiz!", { type: "error" });
-        } else {
+        if (err) {
           toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
@@ -140,30 +136,6 @@ const index = () => {
               />
             </div>
             <div>
-              <label htmlFor="price" className="label">
-                Narxni kiriting (A, B tomonlar):
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  required
-                  type="number"
-                  name="price_a"
-                  id="price"
-                  title="Narxni kiriting"
-                  placeholder="A tomon"
-                  className="w-full input input-bordered input-primary"
-                />
-                <input
-                  required
-                  type="number"
-                  name="price_b"
-                  title="Narxni kiriting"
-                  placeholder="B tomon"
-                  className="w-full input input-bordered input-primary"
-                />
-              </div>
-            </div>
-            <div>
               <label htmlFor="type" className="label">
                 Banner turi:
               </label>
@@ -174,9 +146,9 @@ const index = () => {
                 title="Tanlash"
                 className="w-full select select-bordered select-primary"
               >
-                <option value="devor">Devorda</option>
-                <option value="ustun">Ustunda</option>
-                <option value="boshqa">Boshqa</option>
+                <option value="on_a_wall">Devorda</option>
+                <option value="on_a_pole">Ustunda</option>
+                <option value="else_where">Boshqa</option>
               </select>
             </div>
             <div>
@@ -194,6 +166,9 @@ const index = () => {
               />
             </div>
             <div className="w-full">
+              <label htmlFor="null" className="label">
+                Yuborish:
+              </label>
               <div className="flex items-center gap-3">
                 <button
                   disabled={loading}

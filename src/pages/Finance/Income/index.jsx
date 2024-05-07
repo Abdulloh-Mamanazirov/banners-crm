@@ -6,94 +6,80 @@ import { BarChartYearly } from "../../../components";
 import BarChart from "./BarChart";
 
 const index = () => {
-  const token = sessionStorage.getItem("banner-token");
   const [btnLoading, setBtnLoading] = useState(false);
-  const [banners, setBanners] = useState(false);
+  const [listLoading, setListLoading] = useState(true);
+  const [orders, setOrders] = useState(false);
   const [stats, setStats] = useState({
     monthly: [],
-    yearly: [],
+    payments: [],
   });
 
   async function getData() {
-    let { data: monthly } = await axios.get(`/finance/${token}/monthly-income`);
+    let { data: monthly } = await axios.get(`/orders/monthly_income/`);
     setStats((old) => ({
       ...old,
-      monthly: monthly?.data,
+      monthly: monthly,
     }));
-    let { data: yearly } = await axios.get(`/finance/${token}/yearly-income`);
+
+    let { data: payments } = await axios
+      .get(`/payments/`)
+      .finally(() => setListLoading(false));
     setStats((old) => ({
       ...old,
-      yearly: yearly?.data,
+      payments: payments,
     }));
   }
 
-  async function getBanners() {
-    let response = await axios
-      .request({
-        url: "/banner/get",
-        method: "get",
-        params: {
-          token,
-        },
-      })
-      .catch((err) => {
-        if (err) return;
-      });
+  async function getOrders() {
+    let response = await axios.get(`/orders/`).catch((err) => {
+      if (err) return;
+    });
 
-    if (response?.data?.code === 200) {
-      return setBanners(response?.data?.data);
+    if (response?.status === 200) {
+      return setOrders(response?.data);
     }
   }
 
   useEffect(() => {
     getData();
-    getBanners();
+    getOrders();
   }, []);
 
   async function handleAddIncome(e) {
     e.preventDefault();
     setBtnLoading(true);
 
-    let {
-      banner_id,
-      company_name,
-      contract_start_date,
-      contract_end_date,
-      // price,
-      pre_paid,
-    } = e.target;
+    let { client, amount } = e.target;
+
     let data = {
-      banner_id: banner_id.value,
-      company_name: company_name.value,
-      contract_start_date: new Date(contract_start_date.value)
-        .toLocaleString("ru-Ru")
-        .slice(0, 10),
-      contract_end_date: new Date(contract_end_date.value)
-        .toLocaleString("ru-Ru")
-        .slice(0, 10),
-      // price: price.value,
-      pre_paid: pre_paid.value,
-      type: "income",
+      payment_amount: amount.value,
+      client: client.value,
     };
 
     let response = await axios
-      .post(`/finance/${token}/store`, data)
+      .post(`/payments/`, data)
       .catch((err) => {
-        if (err?.response?.status === 400) {
-          return;
-        } else if (err?.response?.status === 500) {
-          return toast("Serverda xato!", { type: "error" });
-        } else {
+        if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setBtnLoading(false));
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       getData();
       return toast("Kirim muvaffaqiyatli qo'shildi", {
         type: "success",
       });
+    }
+  }
+
+  async function handleDeleteIncome(id) {
+    let response = await axios.delete(`/payments/${id}/`).catch((err) => {
+      if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
+    });
+    if (response.status === 204) {
+      toast("To'lov o'chirildi", { type: "info" });
+      return getData();
     }
   }
 
@@ -107,92 +93,32 @@ const index = () => {
           className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
         >
           <div>
-            <label htmlFor="banner_id" className="label">
-              Banner:
+            <label htmlFor="client" className="label">
+              Buyurtma:
             </label>
             <select
               required
-              name="banner_id"
-              id="banner_id"
+              name="client"
+              id="client"
               className="w-full select select-bordered select-primary"
             >
-              {banners?.map?.((banner, ind) => {
+              {orders?.map?.((order, ind) => {
                 return (
-                  <option key={ind} value={banner?.id}>
-                    {banner?.name}
+                  <option key={ind} value={order?.id}>
+                    {order?.company}
                   </option>
                 );
               })}
             </select>
           </div>
           <div>
-            <label htmlFor="company_name" className="label">
-              Kompaniya nomi:
+            <label htmlFor="amount" className="label">
+              To'lov:
             </label>
             <input
               required
-              type="text"
-              name="company_name"
-              id="company_name"
-              title="Kompaniya nomi"
-              placeholder="Kompaniya nomi"
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            {/* <div>
-              <label htmlFor="price" className="label">
-                To'lov (Oylik):
-              </label>
-              <input
-                required
-                type="number"
-                name="price"
-                id="price"
-                title="Narxi"
-                minLength={100}
-                className="w-full input input-bordered input-primary"
-              />
-            </div> */}
-            <div className="w-full">
-              <label htmlFor="pre_paid" className="label">
-                {/* Oldindan to'lov: */}
-                To'lov (oldindan):
-              </label>
-              <input
-                required
-                type="number"
-                name="pre_paid"
-                id="pre_paid"
-                title="Oldindan to'lov"
-                minLength={100}
-                className="w-full input input-bordered input-primary"
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="contract_start_date" className="label">
-              Boshlanish sanasi:
-            </label>
-            <input
-              required
-              type="date"
-              name="contract_start_date"
-              id="contract_start_date"
-              title="Shartnoma boshlanish sanasini kiriting"
-              className="w-full input input-bordered input-primary"
-            />
-          </div>
-          <div>
-            <label htmlFor="contract_end_date" className="label">
-              Tugash sanasi:
-            </label>
-            <input
-              required
-              type="date"
-              name="contract_end_date"
-              id="contract_end_date"
-              title="Shartnoma tugash sanasini kiriting"
+              name="amount"
+              id="amount"
               className="w-full input input-bordered input-primary"
             />
           </div>
@@ -217,18 +143,89 @@ const index = () => {
       <div className="grid lg:grid-cols-2">
         <div>
           <BarChart
-            title={"Kirim"}
+            title={"to'lanishi kerak bo'lgan summa"}
             color={"rgb(50, 153, 249)"}
             monthly={stats?.monthly}
           />
         </div>
         <div>
           <BarChartYearly
-            title={"Kirim"}
+            title={"to'langan summa"}
             color={"rgb(50, 153, 249)"}
-            yearly={stats?.yearly}
+            yearly={stats?.monthly}
           />
         </div>
+      </div>
+      {/* payments list */}
+      <div className="mt-10 relative overflow-auto max-h-[90vh] max-w-[88vw]">
+        {listLoading ? (
+          <div className="text-center">
+            <span className="loading loading-bars loading-lg" />
+            <p>To'lovlar yuklanmoqda...</p>
+          </div>
+        ) : (
+          <>
+            <table className="w-full table table-pin-rows table-xs md:table-md">
+              <thead>
+                <tr className="bg-base-200 md:text-sm">
+                  <th>#</th>
+                  <th>Buyurtmachi</th>
+                  <th>Qiymat</th>
+                  <th>Qo'shilgan sana</th>
+                  <th>Qo'shgan admin</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats?.payments?.length === 0 && (
+                  <tr className="text-center">
+                    <td colSpan={6} className="text-center">
+                      <h2 className="text-5xl uppercase font-bold">
+                        Bo'm bo'sh
+                      </h2>
+                      <p>To'lovlar tarixi mavjud emas</p>
+                    </td>
+                  </tr>
+                )}
+                {stats?.payments?.map?.((payment, ind) => (
+                  <tr className="hover" key={ind}>
+                    <th>{ind + 1}</th>
+                    <td>
+                      {orders?.map?.(
+                        (order) =>
+                          order?.id === payment?.client && order?.company
+                      )}
+                    </td>
+                    <td>
+                      {Number(payment?.payment_amount).toLocaleString("uz-Uz")}
+                    </td>
+                    <td>{payment?.created_date.slice(0, 10)}</td>
+                    <td>{payment?.admin?.full_name}</td>
+                    <td>
+                      {/* <button
+                        className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
+                        data-tip="Tahrirlash"
+                        onClick={() => {
+                          setOrderInfo(payment);
+                          orderEditModal.current.showModal();
+                        }}
+                      >
+                        <span className="fa-solid fa-edit" />
+                      </button> */}
+                      <button
+                        onClick={() => handleDeleteIncome(payment?.id)}
+                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
+                        data-tip="O'chirish"
+                      >
+                        <span className="fa-solid fa-trash-can" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
     </>
   );

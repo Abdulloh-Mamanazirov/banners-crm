@@ -11,48 +11,37 @@ const index = () => {
     billboards: [],
     orders: <span className="fa-solid fa-spinner animate-spin" />,
     admins: <span className="fa-solid fa-spinner animate-spin" />,
-    users: <span className="fa-solid fa-spinner animate-spin" />,
     banners: <span className="fa-solid fa-spinner animate-spin" />,
   });
 
   async function getStats() {
     let response = await axios
-      .request({
-        url: "/banner/get",
-        method: "get",
-        params: {
-          token: sessionStorage.getItem("banner-token"),
-        },
-      })
+      .get("/banners/")
       .catch((err) => {
-        if (err?.response?.data?.code === 403) {
-          sessionStorage.removeItem("banner-token");
-          return window.location.replace("/login");
-        } else {
+        if (err) {
           toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setLoading(false));
-    if (response?.data?.code === 200) {
+
+    if (response.status === 200) {
       setStats((prev) => ({
         ...prev,
-        billboards: response?.data?.data,
+        billboards: response?.data,
       }));
     }
 
-    let stats = await axios
-      .get(`/${sessionStorage.getItem("banner-token")}/statistics`)
-      .catch((err) => {
-        if (err)
-          toast("Statistik ma'lumotlarni olishda xato!", { type: "error" });
-      });
+    let stats = await axios.get("outlays/home_page_details/").catch((err) => {
+      if (err)
+        toast("Statistik ma'lumotlarni olishda xato!", { type: "error" });
+    });
+
     if (stats?.status === 200) {
       setStats((prev) => ({
         ...prev,
-        orders: stats?.data?.data?.orders,
-        users: stats?.data?.data?.users,
-        admins: stats?.data?.data?.admins,
-        banners: stats?.data?.data?.banners,
+        orders: stats?.data?.orders,
+        admins: stats?.data?.admins,
+        banners: stats?.data?.banners,
       }));
     }
   }
@@ -63,10 +52,9 @@ const index = () => {
 
   return (
     <>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 items-center gap-3">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 items-center gap-3">
         <Stats img={Billboard} title="Jami Bannerlar" value={stats.banners} />
         <Stats img={Ad} title="Jami Buyurtmalar" value={stats.orders} />
-        <Stats img={User} title="Foydalanuvchilar" value={stats.users} />
         <Stats img={Admin} title="Adminlar" value={stats.admins} />
       </div>
       <div className="h-screen mt-5">

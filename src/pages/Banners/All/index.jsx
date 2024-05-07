@@ -14,27 +14,17 @@ const index = () => {
 
   async function getBanners() {
     let response = await axios
-      .request({
-        url: "/banner/get",
-        method: "get",
-        params: {
-          token: sessionStorage.getItem("banner-token"),
-        },
-      })
+      .get("/banners/")
       .catch(async (err) => {
-        if (err?.response?.data?.code === 403) {
-          sessionStorage.removeItem("banner-token");
-          return window.location.replace("/login");
-        } else {
-          await getBanners();
+        if (err) {
           toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setLoading(false));
 
-    if (response?.data?.code === 200) {
-      dispatch(updateBillboards(response?.data?.data?.length));
-      setBanners(response?.data?.data);
+    if (response?.status === 200) {
+      dispatch(updateBillboards(response?.data?.length));
+      setBanners(response?.data);
     }
   }
 
@@ -56,10 +46,10 @@ const index = () => {
                 key={ind}
                 data={banner}
                 id={banner?.id}
-                img={`https://api.abdullajonov.uz/banner-ads-backend/public/storage/banner/images/${banner?.image}`}
+                img={banner?.banner_image}
                 title={banner?.name}
                 state={banner?.is_busy}
-                date={banner?.created_at?.slice(0, 10).replaceAll("-", "/")}
+                date={banner?.created_date?.slice(0, 10).replaceAll("-", "/")}
               />
             ))}
           </div>

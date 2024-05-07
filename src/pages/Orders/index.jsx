@@ -4,140 +4,47 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const index = () => {
-  const token = sessionStorage.getItem("banner-token");
   const orderEditModal = useRef();
-  const navigate = useNavigate();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [orderInfo, setOrderInfo] = useState();
-  const [nextPage, setNextPage] = useState(null);
   const [data, setData] = useState({
     orders: [],
     banners: [],
-    users: [],
   });
 
   async function getBanners() {
-    let response = await axios
-      .request({
-        url: "/banner/get",
-        method: "get",
-        params: {
-          token,
-        },
-      })
-      .catch((err) => {
-        if (err) return;
-      });
-
-    if (response?.data?.code === 200) {
-      return setData((prev) => ({
-        ...prev,
-        banners: response?.data?.data,
-      }));
-    }
-  }
-
-  async function getUsers() {
-    let response = await axios.patch(`/${token}/users/get`).catch((err) => {
+    let response = await axios.get("/banners/").catch((err) => {
       if (err) return;
     });
 
     if (response?.status === 200) {
-      setData((prev) => ({
+      return setData((prev) => ({
         ...prev,
-        users: response?.data?.data?.data,
+        banners: response?.data,
       }));
-
-      if (response?.data?.data?.next_page_url?.length > 0) {
-        let users1 = await getMoreUsers(response?.data?.data?.next_page_url);
-        setData((prev) => ({
-          ...prev,
-          users: [...prev.users, ...users1?.data],
-        }));
-
-        if (users1?.next_page_url?.length > 0) {
-          let users2 = await getMoreUsers(users1?.next_page_url);
-          setData((prev) => ({
-            ...prev,
-            users: [...prev.users, ...users2?.data],
-          }));
-
-          if (users2?.next_page_url?.length > 0) {
-            let users3 = await getMoreUsers(users2?.next_page_url);
-            setData((prev) => ({
-              ...prev,
-              users: [...prev.users, ...users3?.data],
-            }));
-
-            if (users3?.next_page_url?.length > 0) {
-              let users4 = await getMoreUsers(users3?.next_page_url);
-              setData((prev) => ({
-                ...prev,
-                users: [...prev.users, ...users4?.data],
-              }));
-            }
-          }
-        }
-      }
     }
-  }
-
-  async function getMoreUsers(url) {
-    let response = await axios.patch(url).catch((err) => {
-      return false;
-    });
-    return response?.data?.data;
   }
 
   async function getOrders() {
     let response = await axios
-      .get(`/order/${token}/get`)
+      .get(`/orders/`)
       .catch((err) => {
-        if (err?.response?.status === 500) {
-          return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else if (err?.response?.status === 401) {
-          toast("Siz buyurtmalar ro'yxatini ko'ra olmaysiz!", {
-            type: "warning",
-          });
+        if (err) {
+          return toast("Xatolik!", { type: "error" });
         }
       })
       .finally(() => setListLoading(false));
 
-    if (response?.data?.code === 200) {
-      setNextPage(response?.data?.data?.next_page_url);
+    if (response?.status === 200) {
       return setData((prev) => ({
         ...prev,
-        orders: response?.data?.data?.data,
-      }));
-    }
-  }
-
-  async function loadNextPage() {
-    let response = await axios
-      .patch(nextPage)
-      .catch(async (err) => {
-        if (err?.response?.data?.code === 403) {
-          sessionStorage.removeItem("banner-token");
-          return window.location.replace("/login");
-        } else {
-          await getBanners();
-          toast("Nimadadir xatolik ketdi!", { type: "error" });
-        }
-      })
-      .finally(() => setListLoading(false));
-
-    if (response?.data?.code === 200) {
-      setNextPage(response?.data?.data?.next_page_url);
-      setData((old) => ({
-        ...old,
-        orders: [...old.orders, ...response?.data?.data?.data],
+        orders: response?.data,
       }));
     }
   }
 
   useEffect(() => {
-    getUsers();
     getBanners();
     getOrders();
   }, []);
@@ -146,35 +53,39 @@ const index = () => {
     e.preventDefault();
     setButtonLoading(true);
 
-    let { user_id, company, banner_id, start_time, end_time, side, price } =
-      e.target;
+    let {
+      phone,
+      company,
+      banner_id,
+      start_time,
+      end_time,
+      side,
+      price,
+      order_status,
+      note,
+    } = e.target;
     let data = {
-      user_id: user_id.value,
-      company_name: company.value,
-      banner_id: banner_id.value,
-      start_time: new Date(start_time.value).toLocaleDateString("ru-Ru"),
-      end_time: new Date(end_time.value).toLocaleDateString("ru-Ru"),
-      side_a: side.value,
-      side_b: side.value,
-      price: price.value,
+      company: company.value,
+      phone_number: phone.value,
+      banner_side: side.value,
+      rent_price: price.value,
+      start_date: start_time.value,
+      end_date: end_time.value,
+      order_status: order_status.value,
+      order_note: note.value,
+      banner: banner_id.value,
     };
-    if (side.value === "a tanlandi") data.side_b = "";
-    if (side.value === "b tanlandi") data.side_a = "";
 
     let response = await axios
-      .post(`/order/${token}/store`, data)
+      .post(`/orders/`, data)
       .catch((err) => {
-        if (err?.response?.data?.code === 403) {
-          return toast("Siz bu amalni bajara olmaysiz!", { type: "warning" });
-        } else if (err?.response?.data?.code === 500) {
-          return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else {
+        if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setButtonLoading(false));
 
-    if (response?.data?.code === 200) {
+    if (response?.status === 201) {
       getOrders();
       toast("Buyurtma qo'shildi", { type: "success" });
     }
@@ -183,30 +94,42 @@ const index = () => {
   async function handleUpdateOrder(e) {
     e.preventDefault();
 
-    let { banner_id, start_time, end_time, side } = e.target;
+    let {
+      phone,
+      company,
+      banner_id,
+      start_time,
+      end_time,
+      side,
+      price,
+      order_status,
+      note,
+    } = e.target;
     let data = {
-      banner_id: banner_id.value,
-      start_time: start_time.value,
-      end_time: end_time.value,
-      side_a: side.value,
-      side_b: side.value,
+      company: company.value,
+      phone_number: phone.value,
+      banner_side: side.value,
+      rent_price: price.value,
+      start_date: start_time.value,
+      end_date: end_time.value,
+      order_status: order_status.value,
+      order_note: note.value,
+      banner: banner_id.value,
     };
-    if (side.value === "a tanlandi") data.side_b = "";
-    if (side.value === "b tanlandi") data.side_a = "";
+
+    let cleanedObj = Object.fromEntries(
+      Object.entries(data).filter(([key, value]) => !!value)
+    );
 
     let response = await axios
-      .post(`/order/${token}/update/${orderInfo?.id}`, data)
+      .patch(`/orders/${orderInfo?.id}/`, cleanedObj)
       .catch((err) => {
-        if (err?.response?.data?.code === 403) {
-          return toast("Siz bu amalni bajara olmaysiz!", { type: "error" });
-        } else if (err?.response?.data?.code === 500) {
-          return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else {
+        if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       });
 
-    if (response?.data?.code === 200) {
+    if (response?.status === 200) {
       getOrders();
       orderEditModal.current.close();
       return toast("Buyurtma tahrirlandi!", { type: "info" });
@@ -214,12 +137,10 @@ const index = () => {
   }
 
   async function handleDeleteOrder(id) {
-    let response = await axios
-      .delete(`/order/${sessionStorage.getItem("banner-token")}/delete/${id}`)
-      .catch((err) => {
-        if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
-      });
-    if (response.status === 200) {
+    let response = await axios.delete(`/orders/${id}/`).catch((err) => {
+      if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
+    });
+    if (response.status === 204) {
       toast("Buyurtma o'chirildi", { type: "info" });
       return getOrders();
     }
@@ -237,30 +158,6 @@ const index = () => {
           className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
         >
           <div>
-            <label htmlFor="user" className="label">
-              Buyurtma qilivchi:
-            </label>
-            <select
-              required
-              name="user_id"
-              id="user"
-              className="w-full select select-bordered select-primary"
-              onChange={(e) => e.target.value === "new" && navigate("/users")}
-            >
-              <option value={""} selected disabled></option>
-              {data?.users?.map?.((user, ind) => {
-                return (
-                  <option key={ind} value={user?.id}>
-                    {user?.name}
-                  </option>
-                );
-              })}
-              <option value={"new"} className="text-black/50">
-                + Yangi foydalanuvchi qo'shish
-              </option>
-            </select>
-          </div>
-          <div>
             <label htmlFor="company" className="label">
               Kompaniya:
             </label>
@@ -270,6 +167,19 @@ const index = () => {
               name="company"
               id="company"
               title="Kompaniya nomi"
+              className="w-full input input-bordered input-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="phone" className="label">
+              Tel raqam:
+            </label>
+            <input
+              required
+              type="text"
+              name="phone"
+              id="phone"
+              title="Telefon raqam"
               className="w-full input input-bordered input-primary"
             />
           </div>
@@ -302,9 +212,9 @@ const index = () => {
               id="side"
               className="w-full select select-bordered select-primary"
             >
-              <option value="tanlandi">Ikkala tarafi</option>
-              <option value="a tanlandi">A tarafi</option>
-              <option value="b tanlandi">B tarafi</option>
+              <option value="both_sides">Ikkala tarafi</option>
+              <option value="front_side">Old tarafi</option>
+              <option value="back_side">Orqa tarafi</option>
             </select>
           </div>
           <div>
@@ -333,18 +243,43 @@ const index = () => {
           </div>
           <div>
             <label htmlFor="price" className="label">
-              To'lov:
+              Ijara haqi / oy:
             </label>
             <input
               required
               type="number"
               name="price"
               id="price"
-              title="To'lov"
+              title="Ijara haqi / oy"
               minLength={100}
               min={0}
               className="w-full input input-bordered input-primary"
             />
+          </div>
+          <div>
+            <label htmlFor="order_status" className="label">
+              Buyurtma xolati:
+            </label>
+            <select
+              required
+              name="order_status"
+              id="order_status"
+              className="w-full select select-bordered select-primary"
+            >
+              <option value="ongoing_rent">Davom etayotgan</option>
+              <option value="planning_rent">Rejalashtirilgan</option>
+              <option value="finished_rent">Tugatilgan</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="note" className="label">
+              Eslatma:
+            </label>
+            <textarea
+              name="note"
+              id="note"
+              className="w-full input input-bordered input-primary"
+            ></textarea>
           </div>
           <div className="w-full flex items-center gap-3">
             <button
@@ -390,7 +325,9 @@ const index = () => {
                 {data?.orders?.length === 0 && (
                   <tr className="text-center">
                     <td colSpan={6} className="text-center">
-                      <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
+                      <h2 className="text-5xl uppercase font-bold">
+                        Bo'm bo'sh
+                      </h2>
                       <p>Buyurtmalar mavjud emas</p>
                     </td>
                   </tr>
@@ -401,30 +338,25 @@ const index = () => {
                     <td>
                       <p className="whitespace-nowrap">
                         {data?.banners?.map?.((b) => {
-                          if (b.id == order.banner_id) return <>{b?.name}</>;
+                          if (b.id == order.banner) return <>{b?.name}</>;
                         })}
                       </p>
                       <p>
                         (
-                        {order?.side_a === "tanlandi" &&
-                        order?.side_b === "tanlandi"
-                          ? "Ikkala taraf"
-                          : order?.side_a === "a tanlandi"
-                          ? "A taraf"
-                          : order?.side_b === "b tanlandi"
-                          ? "B taraf"
+                        {order?.banner_side === "both_sides"
+                          ? "Ikkala tomon"
+                          : order?.banner_side === "front_side"
+                          ? "Old tomon"
+                          : order?.banner_side === "back_side"
+                          ? "Orqa tomon"
                           : ""}
                         )
                       </p>
                     </td>
-                    <td>
-                      {data?.users?.map?.((u) => {
-                        if (u.id == order.user_id) return <>{u?.name}</>;
-                      })}
-                    </td>
-                    <td>{order?.created_at.slice(0, 10)}</td>
-                    <td>{order?.start_time.slice(0, 16).replace("T", " ")}</td>
-                    <td>{order?.end_time.slice(0, 16).replace("T", " ")}</td>
+                    <td>{order?.company}</td>
+                    <td>{order?.created_date.slice(0, 10)}</td>
+                    <td>{order?.start_date.slice(0, 16).replace("T", " ")}</td>
+                    <td>{order?.end_date.slice(0, 16).replace("T", " ")}</td>
                     <td>
                       <button
                         className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
@@ -448,19 +380,11 @@ const index = () => {
                 ))}
               </tbody>
             </table>
-            <button
-              onClick={loadNextPage}
-              className={`mt-5 w-full btn btn-outline capitalize text-lg ${
-                nextPage === null && "hidden"
-              }`}
-            >
-              Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
-            </button>
           </>
         )}
       </div>
 
-      {/* Admin edit modal */}
+      {/* Order edit modal */}
       <dialog
         ref={orderEditModal}
         className="modal modal-bottom sm:modal-middle"
@@ -476,13 +400,35 @@ const index = () => {
             <table className="table">
               <tbody>
                 <tr>
+                  <th>Buyurtmachi:</th>
+                  <td>
+                    <input
+                      type="company"
+                      name="company"
+                      className="w-full input input-bordered input-accent input-sm"
+                      defaultValue={orderInfo?.company}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <th>Tel:</th>
+                  <td>
+                    <input
+                      type="phone"
+                      name="phone"
+                      className="w-full input input-bordered input-accent input-sm"
+                      defaultValue={orderInfo?.phone_number}
+                    />
+                  </td>
+                </tr>
+                <tr>
                   <th>Banner:</th>
                   <td>
                     <select
                       name="banner_id"
                       id="banner_id"
                       className="w-full select select-bordered select-accent select-sm"
-                      defaultValue={orderInfo?.id}
+                      defaultValue={orderInfo?.banner}
                     >
                       {data?.banners?.map?.((banner, ind) => {
                         return (
@@ -501,10 +447,11 @@ const index = () => {
                       name="side"
                       id="side"
                       className="w-full select select-bordered select-accent select-sm"
+                      defaultValue={orderInfo?.banner_side}
                     >
-                      <option value="tanlandi">Ikkala tarafi</option>
-                      <option value="a tanlandi">A tarafi</option>
-                      <option value="b tanlandi">B tarafi</option>
+                      <option value="both_sides">Ikkala tarafi</option>
+                      <option value="front_side">Old tarafi</option>
+                      <option value="back_side">Orqa tarafi</option>
                     </select>
                   </td>
                 </tr>
@@ -512,7 +459,6 @@ const index = () => {
                   <th>Boshlanish sanasi:</th>
                   <td>
                     <input
-                      required
                       type="date"
                       name="start_time"
                       id="start"
@@ -532,6 +478,40 @@ const index = () => {
                       defaultValue={orderInfo?.end_time}
                     />
                   </td>
+                </tr>
+                <tr>
+                  <th>Ijara haqi/oy :</th>
+                  <td>
+                    <input
+                      type="price"
+                      name="price"
+                      className="w-full input input-bordered input-accent input-sm"
+                      defaultValue={orderInfo?.rent_price}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <th>Buyurtma xolati:</th>
+                  <select
+                    name="order_status"
+                    id="order_status"
+                    className="w-full select select-bordered select-accent select-sm"
+                    defaultValue={orderInfo?.order_status}
+                  >
+                    <option value="ongoing_rent">Davom etayotgan</option>
+                    <option value="planning_rent">Rejalashtirilgan</option>
+                    <option value="finished_rent">Tugatilgan</option>
+                  </select>
+                </tr>
+                <tr>
+                  <th>Eslatma:</th>
+                  <textarea
+                    name="note"
+                    id="note"
+                    className="w-full input input-bordered input-accent"
+                    rows={5}
+                    defaultValue={orderInfo?.order_note}
+                  ></textarea>
                 </tr>
                 <tr>
                   <td>
