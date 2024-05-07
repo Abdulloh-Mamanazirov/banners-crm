@@ -3,7 +3,6 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Login,
-  Users,
   Admins,
   Banners,
   Create,
@@ -37,7 +36,6 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<Home />} />
-              <Route path="/users" element={<Users />} />
               <Route path="/admins" element={<Admins />} />
               <Route path="/banners" element={<Banners />} />
               <Route path="/banners/add" element={<Create />} />
