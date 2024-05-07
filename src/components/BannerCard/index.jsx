@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { ImageInput, Location } from "../";
 import { updateBillboards, updateImage, updateSendingImage } from "../../redux";
 
-const index = ({ data, id, img, state, title, date }) => {
+const index = ({ data, id, img, title, date }) => {
   const dispatch = useDispatch();
   const { billboards } = useSelector((state) => state.stats);
   const { sendingImage } = useSelector((state) => state.images);
@@ -21,27 +21,20 @@ const index = ({ data, id, img, state, title, date }) => {
     e.preventDefault();
     setLoading(true);
 
-    let { lat, lng, name, price_a, price_b, type, banner_id } = e.target;
+    let { lat, lng, name, type, banner_id } = e.target;
 
     let data = new FormData();
-    data.append("admin_token", sessionStorage.getItem("banner-token"));
     data.append("name", name.value);
-    data.append("location", JSON.stringify([lat.value, lng.value]));
-    data.append("image", sendingImage);
-    data.append("price_a", price_a.value);
-    data.append("price_b", price_b.value);
-    data.append("type", type.value);
+    data.append("latitude", lat.value);
+    data.append("longitude", lng.value);
+    data.append("banner_type", type.value);
     data.append("banner_id", banner_id.value);
+    if (sendingImage) data.append("banner_image", sendingImage);
 
     let response = await axios
-      .post(
-        `/banner/update/${sessionStorage.getItem("banner-token")}/${id}`,
-        data
-      )
+      .patch(`/banners/${id}/`, data)
       .catch((err) => {
-        if (err?.response?.status === 403) {
-          toast("Siz bu amalni bajara olmaysiz!", { type: "warning" });
-        } else {
+        if (err) {
           toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
@@ -54,7 +47,7 @@ const index = ({ data, id, img, state, title, date }) => {
     if (response?.status === 200) {
       bannerUpdateModal.current.close();
       toast("Banner yangilandi", { type: "success" });
-      return dispatch(updateBillboards(billboards+1));
+      return dispatch(updateBillboards(billboards + 1));
     }
   }
 
@@ -77,17 +70,7 @@ const index = ({ data, id, img, state, title, date }) => {
           <div>
             <h3 className="text-xl font-medium line-clamp-2">{title}</h3>
             <div className="flex items-center gap-3">
-              <p className="desc">Xolati:</p>
-              <p
-                className={`badge ${
-                  state === null ? "badge-success" : "badge-error"
-                } text-white`}
-              >
-                {state === null ? "Mavjud" : "Band"}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <p className="desc">O'rnatilgan sana:</p>
+              <p className="desc">Qo'shilgan sana:</p>
               <p>{date}</p>
             </div>
           </div>
@@ -149,7 +132,7 @@ const index = ({ data, id, img, state, title, date }) => {
           <h3 className="font-bold text-lg mb-3">Banner Info</h3>
           <div className="max-w-full border rounded-lg">
             <img
-              src={`https://api.abdullajonov.uz/banner-ads-backend/public/storage/banner/images/${data?.image}`}
+              src={img}
               alt="banner image"
               className="w-full aspect-video object-cover rounded-lg"
             />
@@ -166,32 +149,18 @@ const index = ({ data, id, img, state, title, date }) => {
                   <td>{data?.name}</td>
                 </tr>
                 <tr>
-                  <th>Xolati:</th>
+                  <th>Banner turi:</th>
                   <td>
-                    <p
-                      className={`badge ${
-                        state === null ? "badge-success" : "badge-error"
-                      } text-white`}
-                    >
-                      {state === null ? "Mavjud" : "Band"}
-                    </p>
+                    {data?.banner_type === "on_a_wall"
+                      ? "Devorda"
+                      : data?.banner_type === "on_a_pole"
+                      ? "Ustunda"
+                      : "Boshqa"}
                   </td>
                 </tr>
                 <tr>
-                  <th>A tomon narxi:</th>
-                  <td>{data?.price_a} so'm</td>
-                </tr>
-                <tr>
-                  <th>B tomon narxi:</th>
-                  <td>{data?.price_b} so'm</td>
-                </tr>
-                <tr>
-                  <th>Banner turi:</th>
-                  <td>{data?.type}</td>
-                </tr>
-                <tr>
                   <th>O'rnatilgan sana:</th>
-                  <td>{(data?.created_at).slice(0, 10)}</td>
+                  <td>{(data?.created_date).slice(0, 10)}</td>
                 </tr>
               </tbody>
             </table>
@@ -223,7 +192,7 @@ const index = ({ data, id, img, state, title, date }) => {
               <div>
                 <div className="h-96 mb-3">
                   <Location
-                    location={JSON.parse(data?.location)}
+                    location={[data?.latitude, data?.longitude]}
                     handlePickLocation={(e) =>
                       setCoordinates((prev) => ({
                         ...prev,
@@ -241,9 +210,7 @@ const index = ({ data, id, img, state, title, date }) => {
                     <input
                       disabled
                       value={
-                        coordinates.lat === 0
-                          ? JSON.parse(data?.location)?.[0]
-                          : coordinates.lat
+                        coordinates.lat === 0 ? data?.latitude : coordinates.lat
                       }
                       type="text"
                       id="lat"
@@ -259,7 +226,7 @@ const index = ({ data, id, img, state, title, date }) => {
                       disabled
                       value={
                         coordinates.lng === 0
-                          ? JSON.parse(data?.location)?.[1]
+                          ? data?.longitude
                           : coordinates.lng
                       }
                       type="text"
@@ -301,41 +268,17 @@ const index = ({ data, id, img, state, title, date }) => {
                   </td>
                 </tr>
                 <tr>
-                  <th>A tomon narxi:</th>
-                  <td>
-                    <input
-                      type="number"
-                      defaultValue={data?.price_a}
-                      name="price_a"
-                      className="w-full sm:w-auto input input-bordered input-accent input-sm"
-                    />{" "}
-                    so'm
-                  </td>
-                </tr>
-                <tr>
-                  <th>B tomon narxi:</th>
-                  <td>
-                    <input
-                      type="text"
-                      defaultValue={data?.price_b}
-                      name="price_b"
-                      className="w-full sm:w-auto input input-bordered input-accent input-sm"
-                    />{" "}
-                    so'm
-                  </td>
-                </tr>
-                <tr>
                   <th>Banner turi:</th>
                   <td>
                     <select
                       name="type"
                       title="Tanlash"
-                      defaultValue={data?.type}
+                      defaultValue={data?.banner_type}
                       className="w-full sm:w-auto select select-bordered select-accent select-sm"
                     >
-                      <option value="devor">Devorda</option>
-                      <option value="ustun">Ustunda</option>
-                      <option value="boshqa">Boshqa</option>
+                      <option value="on_a_wall">Devorda</option>
+                      <option value="on_a_pole">Ustunda</option>
+                      <option value="else_where">Boshqa</option>
                     </select>
                   </td>
                 </tr>
