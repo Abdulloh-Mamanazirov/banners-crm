@@ -10,52 +10,21 @@ const index = () => {
   const [adminInfo, setAdminInfo] = useState();
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(true);
-  const [nextPage, setNextPage] = useState(null);
   const dispatch = useDispatch();
 
   async function getAdmins() {
     let response = await axios
-      .patch(`/${sessionStorage.getItem("banner-token")}/admins/get`)
+      .get(`/users/`)
       .catch((err) => {
-        if (err?.response?.data?.code === 403) {
-          return toast("Siz adminlar ro'yxatini ko'ra olmaysiz!", {
-            type: "warning",
-          });
-        } else if (err?.response?.data?.code === 500) {
-          return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else {
+        if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setTableLoading(false));
 
     if (response?.status === 200) {
-      setNextPage(response?.data?.data?.next_page_url);
-      dispatch(updateAdmins(response?.data?.data?.data?.length));
-      return setAdmins(response?.data?.data?.data);
-    }
-  }
-
-  async function loadNextPage() {
-    let response = await axios
-      .patch(nextPage)
-      .catch(async (err) => {
-        if (err?.response?.data?.code === 403) {
-          return toast("Siz adminlar ro'yxatini ko'ra olmaysiz!", {
-            type: "warning",
-          });
-        } else if (err?.response?.data?.code === 500) {
-          return toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else {
-          return toast("Nimadadir xatolik ketdi!", { type: "error" });
-        }
-      })
-      .finally(() => setTableLoading(false));
-
-    if (response?.data?.code === 200) {
-      setNextPage(response?.data?.data?.next_page_url);
-      setAdmins((old) => [...old, ...response?.data?.data?.data]);
-      dispatch(updateAdmins(admins?.length));
+      dispatch(updateAdmins(response?.data?.length));
+      return setAdmins(response?.data);
     }
   }
 
@@ -67,32 +36,20 @@ const index = () => {
     e.preventDefault();
     setLoading(true);
 
-    let { name, phone, degree, username, password } = e.target;
+    let { name, degree, username, password } = e.target;
 
     let data = {
-      token: sessionStorage.getItem("banner-token"),
-      name: name.value,
-      login: username.value,
+      username: username.value,
+      full_name: name.value,
+      admin_status: degree.value,
       password: password.value,
-      degree: Number(degree.value),
     };
 
     let response = await axios
-      .post("/createAdmin", data)
+      .post("/users/", data)
       .catch((err) => {
-        if (err?.response?.status === 500) {
-          toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else if (err?.response?.status === 403) {
-          if (
-            err?.response?.data?.message ===
-            "You have no permission to create this"
-          ) {
-            toast("Siz bu amalni bajara olmaysiz!", { type: "warning" });
-          } else {
-            toast("Bunday username mavjud!", { type: "error" });
-          }
-        } else {
-          toast("Nimadadir xatolik ketdi!", { type: "error" });
+        if (err) {
+          return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setLoading(false));
@@ -105,23 +62,24 @@ const index = () => {
   async function handleUpdateAdmin(e) {
     e.preventDefault();
 
-    let { name, degree, login, password } = e.target;
+    let { name, degree, username, password } = e.target;
 
     let data = {
-      admin_id: adminInfo?.id,
-      name: name.value,
-      login: login.value,
+      username: username.value,
+      full_name: name.value,
+      admin_status: degree.value,
       password: password.value,
-      degree: Number(degree.value),
     };
 
+    let cleanedObj = Object.fromEntries(
+      Object.entries(data).filter(([key, value]) => !!value)
+    );
+
     let response = await axios
-      .post(`/admin/${sessionStorage.getItem("banner-token")}/update`, data)
+      .patch(`/users/${adminInfo?.id}/`, cleanedObj)
       .catch((err) => {
         if (err?.response?.status === 500) {
           toast("Serverga bog'lanib bo'lmadi!", { type: "error" });
-        } else if (err?.response?.status === 403) {
-          toast("Bunday username mavjud!", { type: "error" });
         } else {
           toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
@@ -135,19 +93,13 @@ const index = () => {
   }
 
   async function handleDeleteAdmin(admin) {
-    let response = await axios
-      .delete(
-        `/admin/${sessionStorage.getItem("banner-token")}/delete/${admin?.id}`
-      )
-      .catch((err) => {
-        if (err?.response?.status === 500)
-          toast("Serverga bog';'lanib bo'lmadi!", { type: "error" });
-        else if (err?.response?.status === 404)
-          toast("Admin topilmadi!", { type: "error" });
-        else toast("Nimadadir xatolik ketdi!", { type: "error" });
-      });
+    let response = await axios.delete(`/users/${admin?.id}/`).catch((err) => {
+      if (err?.response?.status === 500)
+        toast("Serverga bog';'lanib bo'lmadi!", { type: "error" });
+      else toast("Nimadadir xatolik ketdi!", { type: "error" });
+    });
 
-    if (response?.status === 200) {
+    if (response?.status === 204) {
       getAdmins();
       return toast("Admin o'chirildi", { type: "info" });
     }
@@ -188,9 +140,9 @@ const index = () => {
               id="degree"
               className="w-full select select-bordered select-primary"
             >
-              <option value="3">Eng yuqori</option>
-              <option value="2">O'rta</option>
-              <option value="1">Past</option>
+              <option value="high_rank">Eng yuqori</option>
+              <option value="middle_rank">O'rta</option>
+              <option value="low_rank">Past</option>
             </select>
           </div>
           <div>
@@ -266,13 +218,13 @@ const index = () => {
                 {admins?.map?.((admin, ind) => (
                   <tr className="hover" key={ind}>
                     <th>{ind + 1}</th>
-                    <td>{admin?.name}</td>
-                    <td>{admin?.login}</td>
-                    <td>{admin?.created_at.slice(0, 10)}</td>
+                    <td>{admin?.full_name}</td>
+                    <td>{admin?.username}</td>
+                    <td>{admin?.created_date.slice(0, 10)}</td>
                     <td>
-                      {admin?.degree === "3"
+                      {admin?.admin_status === "high_rank"
                         ? "Eng yuqori"
-                        : admin?.degree === "2"
+                        : admin?.admin_status === "middle_rank"
                         ? "O'rta"
                         : "Past"}
                     </td>
@@ -299,15 +251,6 @@ const index = () => {
                 ))}
               </tbody>
             </table>
-
-            <button
-              onClick={loadNextPage}
-              className={`mt-5 w-full btn btn-outline capitalize text-lg ${
-                nextPage === null && "hidden"
-              }`}
-            >
-              Ko'proq ko'rish <span className="fa-solid fa-arrow-down" />
-            </button>
           </>
         )}
       </div>
@@ -332,7 +275,7 @@ const index = () => {
                   <td>
                     <input
                       type="text"
-                      defaultValue={adminInfo?.name}
+                      defaultValue={adminInfo?.full_name}
                       name="name"
                       className="w-full sm:w-auto input input-bordered input-accent input-sm"
                     />
@@ -344,12 +287,12 @@ const index = () => {
                     <select
                       name="degree"
                       title="Tanlash"
-                      defaultValue={adminInfo?.degree}
+                      defaultValue={adminInfo?.admin_status}
                       className="w-full sm:w-auto select select-bordered select-accent select-sm"
                     >
-                      <option value="3">Eng yuqori</option>
-                      <option value="2">O'rta</option>
-                      <option value="1">Past</option>
+                      <option value="high_rank">Eng yuqori</option>
+                      <option value="middle_rank">O'rta</option>
+                      <option value="low_rank">Past</option>
                     </select>
                   </td>
                 </tr>
@@ -358,8 +301,8 @@ const index = () => {
                   <td>
                     <input
                       type="text"
-                      defaultValue={adminInfo?.login}
-                      name="login"
+                      defaultValue={adminInfo?.username}
+                      name="username"
                       className="w-full sm:w-auto input input-bordered input-accent input-sm"
                     />
                   </td>
@@ -370,7 +313,7 @@ const index = () => {
                     <input
                       type="password"
                       name="password"
-                      minLength={8}
+                      minLength={5}
                       className="w-full sm:w-auto input input-bordered input-accent input-sm"
                     />
                   </td>
