@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 // axios
 // axios.defaults.baseURL = "https://api.abdullajonov.uz/banner-ads-backend/api";
 // axios.defaults.baseURL = "http://192.168.1.105:8000/api";
+axios.defaults.baseURL = "https://api.jsspm.uz/api";
 axios.defaults.headers.common["Authorization"] =
   "Token " + sessionStorage.getItem("banner-token");
 
