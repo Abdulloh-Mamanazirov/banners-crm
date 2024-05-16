@@ -111,7 +111,10 @@ const index = ({ data, id, img, title, date }) => {
         </div>
         <div className="max-w-full border rounded-lg">
           <img
-            src={img}
+            src={img.replace(
+              "http://localhost:8099/banner_images",
+              "https://api.jsspm.uz/banner"
+            )}
             alt="billboard image"
             className="w-full aspect-square object-cover rounded-lg"
           />
