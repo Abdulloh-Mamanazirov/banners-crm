@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 const index = ({ yearly, title, color }) => {
   const { pathname } = useLocation();
   // yearly = Object.values(yearly).sort((a, b) => a.year - b.year);
-  if (pathname === "/outcome") yearly.yearly_payment = yearly?.yearly_expenses;
+  if (pathname === "/outcome") yearly.yearly_payment = yearly?.yearly_payment;
 
   const yearly_data = {
     labels: [yearly.year],

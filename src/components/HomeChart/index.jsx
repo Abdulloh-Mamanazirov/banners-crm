@@ -32,16 +32,23 @@ const index = ({ monthly, title, color }) => {
         return "Dekabr";
     }
   }
-
+  
   const monthly_data = {
-    labels: Object.keys(monthly?.monthly_expenses ?? {}).map((item) =>
+    labels: Object.keys(monthly?.you_need_this ?? {}).map((item) =>
       getMonth(item)
     ),
     datasets: [
       {
-        label: "Chiqim",
+        label: "To'langan",
+        backgroundColor: "darkred",
+        data: monthly.paid_payment,
+        categoryPercentage: 0.9,
+        barPercentage: 1,
+      },
+      {
+        label: "To'lanishi kerak",
         backgroundColor: "red",
-        data: Object.values(monthly.monthly_expenses ?? {}),
+        data: Object.values(monthly.you_need_this ?? {}),
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
@@ -57,6 +64,14 @@ const index = ({ monthly, title, color }) => {
         data={monthly_data}
         options={{
           responsive: true,
+          scales: {
+            y: {
+              stacked: true,
+            },
+            x: {
+              stacked: true,
+            },
+          },
         }}
       />
     </div>
