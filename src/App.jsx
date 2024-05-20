@@ -11,6 +11,7 @@ import {
   Income,
   Outcome,
   FinanceLogs,
+  Expense,
 } from "./pages";
 import Layout from "./layout";
 
@@ -42,6 +43,7 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/income" element={<Income />} />
               <Route path="/outcome" element={<Outcome />} />
+              <Route path="/expense" element={<Expense />} />
               <Route path="/logs" element={<FinanceLogs />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
