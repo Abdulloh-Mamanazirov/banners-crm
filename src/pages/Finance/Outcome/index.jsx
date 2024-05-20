@@ -167,6 +167,7 @@ const index = () => {
                 <tr className="bg-base-200 md:text-sm">
                   <th>#</th>
                   <th>Chiqim miqdori</th>
+                  <th>Sarflangan</th>
                   <th>Qo'shgan admin</th>
                   <th>Sana</th>
                   <th></th>
@@ -187,6 +188,7 @@ const index = () => {
                   <tr className="hover" key={ind}>
                     <th>{ind + 1}</th>
                     <td>{outcome?.outlay_amount}</td>
+                    <td>{outcome?.bruh?.name}</td>
                     <td>{outcome?.admin?.full_name}</td>
                     <td>{outcome?.created_date.slice(0, 10)}</td>
                     <td>
