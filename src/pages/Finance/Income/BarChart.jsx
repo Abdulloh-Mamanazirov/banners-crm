@@ -34,12 +34,21 @@ const index = ({ monthly, title, color }) => {
   }
 
   const monthly_data = {
-    labels: Object.keys(monthly.payment ?? {}).map((item) => getMonth(item)),
+    labels: Object.keys(monthly?.you_need_this ?? {}).map((item) =>
+      getMonth(item)
+    ),
     datasets: [
       {
-        label: "To'lanishi kerak",
+        label: "To'langan",
         backgroundColor: "darkblue",
-        data: Object.values(monthly.payment ?? {}),
+        data: monthly.paid_payment,
+        categoryPercentage: 0.9,
+        barPercentage: 1,
+      },
+      {
+        label: "To'lanishi kerak",
+        backgroundColor: "blue",
+        data: Object.values(monthly.you_need_this ?? {}),
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
