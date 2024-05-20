@@ -109,7 +109,7 @@ const index = () => {
                     setImages((prev) => ({
                       ...prev,
                       formImage: e.target.files[0],
-                      cover: URL.createObjectURL(e.target.files[0]),
+                      cover: URL.createObjectURL(e.target.files[0] ?? {}),
                     }));
                     dispatch(
                       updateImage(URL.createObjectURL(e.target.files[0]))
