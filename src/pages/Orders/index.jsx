@@ -315,6 +315,8 @@ const index = () => {
                   <th>#</th>
                   <th>Banner</th>
                   <th>Buyurtmachi</th>
+                  <th>Jami to'lanishi kerak</th>
+                  <th>To'langan</th>
                   <th>Yaratilgan sana</th>
                   <th>Boshlanish vaqti</th>
                   <th>Tugash vaqti</th>
@@ -354,6 +356,8 @@ const index = () => {
                       </p>
                     </td>
                     <td>{order?.company}</td>
+                    <td>{order?.full_payment}</td>
+                    <td>{order?.paid_payment}</td>
                     <td>{order?.created_date.slice(0, 10)}</td>
                     <td>{order?.start_date.slice(0, 16).replace("T", " ")}</td>
                     <td>{order?.end_date.slice(0, 16).replace("T", " ")}</td>
