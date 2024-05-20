@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { BarChart, BarChartYearly } from "../../../components";
 
 const index = () => {
+  const [expenses, setExpenses] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -13,7 +14,7 @@ const index = () => {
   });
 
   async function getData() {
-    let { data: monthly } = await axios.get(`/outlays/monthly_expenses/`);
+    let { data: monthly } = await axios.get(`/bruhs/monthly_income/`);
     setStats((old) => ({
       ...old,
       monthly: monthly,
@@ -28,16 +29,27 @@ const index = () => {
     }));
   }
 
+  async function getExpenses() {
+    let response = await axios.get(`/bruhs/`).catch((err) => {
+      if (err) return;
+    });
+    if (response?.status === 200) {
+      return setExpenses(response?.data);
+    }
+  }
+
   useEffect(() => {
     getData();
+    getExpenses();
   }, []);
 
   async function handleAddOutcome(e) {
     e.preventDefault();
     setBtnLoading(true);
 
-    let { amount } = e.target;
+    let { bruh, amount } = e.target;
     let data = {
+      bruh: bruh.value,
       outlay_amount: amount.value,
     };
 
@@ -78,6 +90,25 @@ const index = () => {
           className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
         >
           <div>
+            <label htmlFor="bruh" className="label">
+              Chiqim:
+            </label>
+            <select
+              required
+              name="bruh"
+              id="bruh"
+              className="w-full select select-bordered select-primary"
+            >
+              {expenses?.map?.((item, ind) => {
+                return (
+                  <option key={ind} value={item?.id}>
+                    {item?.name}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div>
             <label htmlFor="amount" className="label">
               Chiqim summasi:
             </label>
@@ -117,7 +148,7 @@ const index = () => {
         <div>
           <BarChartYearly
             title={"Chiqim"}
-            color={"rgb(256,0,0)"}
+            color={"darkred"}
             yearly={stats?.monthly}
           />
         </div>
