@@ -109,6 +109,17 @@ const index = ({ content }) => {
                 </li>
                 <li
                   className={`mb-2 ${
+                    pathname === "/expense" &&
+                    "bg-blue-400 rounded-lg bg-opacity-10"
+                  }`}
+                >
+                  <Link to={"/expense"}>
+                    <span className={"fa-solid fa-coins"} />{" "}
+                    {"Sarf-harajat"}
+                  </Link>
+                </li>
+                <li
+                  className={`mb-2 ${
                     pathname === "/logs" &&
                     "bg-blue-400 rounded-lg bg-opacity-10"
                   }`}
