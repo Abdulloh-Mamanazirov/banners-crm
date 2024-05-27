@@ -6,6 +6,7 @@ import { BarChartYearly } from "../../../components";
 import BarChart from "./BarChart";
 
 const index = () => {
+  const [year, setYear] = useState(2024);
   const [btnLoading, setBtnLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
   const [orders, setOrders] = useState(false);
@@ -15,7 +16,7 @@ const index = () => {
   });
 
   async function getData() {
-    let { data: monthly } = await axios.get(`/orders/monthly_income/`);
+    let { data: monthly } = await axios.get(`/orders/monthly_income/${year}/`);
     setStats((old) => ({
       ...old,
       monthly: monthly,
@@ -42,6 +43,9 @@ const index = () => {
 
   useEffect(() => {
     getData();
+  }, [year]);
+
+  useEffect(() => {
     getOrders();
   }, []);
 
@@ -140,6 +144,22 @@ const index = () => {
           </div>
         </form>
       </div>
+
+      {/* year filter */}
+      <div className="flex items-center gap-2">
+        <label htmlFor="year">Filter:</label>
+        <input
+          name="year"
+          id="year"
+          className="border rounded-md py-1 px-2"
+          type="number"
+          min="2022"
+          step="1"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        />
+      </div>
+
       <div className="grid lg:grid-cols-2">
         <div>
           <BarChart
