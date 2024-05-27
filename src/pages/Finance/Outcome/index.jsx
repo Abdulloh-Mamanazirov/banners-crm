@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { BarChart, BarChartYearly } from "../../../components";
 
 const index = () => {
+  const [year, setYear] = useState(2024);
   const [expenses, setExpenses] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
@@ -14,7 +15,7 @@ const index = () => {
   });
 
   async function getData() {
-    let { data: monthly } = await axios.get(`/bruhs/monthly_income/`);
+    let { data: monthly } = await axios.get(`/bruhs/monthly_income/${year}/`);
     setStats((old) => ({
       ...old,
       monthly: monthly,
@@ -40,6 +41,9 @@ const index = () => {
 
   useEffect(() => {
     getData();
+  }, [year]);
+
+  useEffect(() => {
     getExpenses();
   }, []);
 
@@ -137,6 +141,22 @@ const index = () => {
           </div>
         </form>
       </div>
+
+      {/* year filter */}
+      <div className="flex items-center gap-2">
+        <label htmlFor="year">Filter:</label>
+        <input
+          name="year"
+          id="year"
+          className="border rounded-md py-1 px-2"
+          type="number"
+          min="2022"
+          step="1"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        />
+      </div>
+
       <div className="grid lg:grid-cols-2">
         <div>
           <BarChart
