@@ -148,7 +148,107 @@ const index = () => {
 
   return (
     <>
-      {/* Add new order */}
+      {/* Orders table */}
+      <div className="relative overflow-auto max-h-[90vh] max-w-[88vw]">
+        {listLoading ? (
+          <div className="text-center">
+            <span className="loading loading-bars loading-lg" />
+            <p>Buyurtmalar yuklanmoqda...</p>
+          </div>
+        ) : (
+          <>
+            <table className="table table-pin-rows table-xs md:table-md">
+              <thead>
+                <tr className="bg-base-200 md:text-sm">
+                  <th>#</th>
+                  <th>Banner</th>
+                  <th>Buyurtmachi</th>
+                  <th>Jami to'lanishi kerak</th>
+                  <th>To'langan</th>
+                  <th>Yaratilgan sana</th>
+                  <th>Boshlanish vaqti</th>
+                  <th>Tugash vaqti</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.orders?.length === 0 && (
+                  <tr className="text-center">
+                    <td colSpan={8} className="text-center">
+                      <h2 className="text-5xl uppercase font-bold">
+                        Bo'm bo'sh
+                      </h2>
+                      <p>Buyurtmalar mavjud emas</p>
+                    </td>
+                  </tr>
+                )}
+                {data?.orders?.map?.((order, ind) => (
+                  <tr className="hover" key={ind}>
+                    <th>{ind + 1}</th>
+                    <td>
+                      <p className="whitespace-nowrap">
+                        {data?.banners?.map?.((b) => {
+                          if (b.id == order.banner) return <>{b?.name}</>;
+                        })}
+                      </p>
+                      <p>
+                        (
+                        {order?.banner_side === "both_sides"
+                          ? "Ikkala tomon"
+                          : order?.banner_side === "front_side"
+                          ? "Old tomon"
+                          : order?.banner_side === "back_side"
+                          ? "Orqa tomon"
+                          : ""}
+                        )
+                      </p>
+                    </td>
+                    <td>{order?.company}</td>
+                    <td>{order?.full_payment}</td>
+                    <td>{order?.paid_payment}</td>
+                    <td>{order?.created_date.slice(0, 10)}</td>
+                    <td>{order?.start_date.slice(0, 16).replace("T", " ")}</td>
+                    <td>{order?.end_date.slice(0, 16).replace("T", " ")}</td>
+                    <td>
+                      <button
+                        className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
+                        data-tip="Tahrirlash"
+                        onClick={() => {
+                          setOrderInfo(order);
+                          orderEditModal.current.showModal();
+                        }}
+                      >
+                        <span className="fa-solid fa-edit" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteOrder(order?.id)}
+                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
+                        data-tip="O'chirish"
+                      >
+                        <span className="fa-solid fa-trash-can" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+      </div>
+
+      {/* Add order button */}
+      <button
+        onClick={() => orderAddModal.current.showModal()}
+        className="w-16 h-16 btn btn-primary rounded-full fixed bottom-10 right-10"
+      >
+        <span
+          className="absolute bg-cov inset-0 tooltip tooltip-left normal-case"
+          data-tip="Yangi buyurtma"
+        />
+        <span className="fa-solid fa-plus fa-xl" />
+      </button>
+
+      {/* Add new order modal */}
       <dialog
         ref={orderAddModal}
         className="backdrop:bg-black/20 p-3 rounded-xl w-full md:w-2/3"
@@ -314,106 +414,6 @@ const index = () => {
           </div>
         </form>
       </dialog>
-
-      {/* Orders table */}
-      <div className="relative overflow-auto max-h-[90vh] max-w-[88vw]">
-        {listLoading ? (
-          <div className="text-center">
-            <span className="loading loading-bars loading-lg" />
-            <p>Buyurtmalar yuklanmoqda...</p>
-          </div>
-        ) : (
-          <>
-            <table className="table table-pin-rows table-xs md:table-md">
-              <thead>
-                <tr className="bg-base-200 md:text-sm">
-                  <th>#</th>
-                  <th>Banner</th>
-                  <th>Buyurtmachi</th>
-                  <th>Jami to'lanishi kerak</th>
-                  <th>To'langan</th>
-                  <th>Yaratilgan sana</th>
-                  <th>Boshlanish vaqti</th>
-                  <th>Tugash vaqti</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {data?.orders?.length === 0 && (
-                  <tr className="text-center">
-                    <td colSpan={8} className="text-center">
-                      <h2 className="text-5xl uppercase font-bold">
-                        Bo'm bo'sh
-                      </h2>
-                      <p>Buyurtmalar mavjud emas</p>
-                    </td>
-                  </tr>
-                )}
-                {data?.orders?.map?.((order, ind) => (
-                  <tr className="hover" key={ind}>
-                    <th>{ind + 1}</th>
-                    <td>
-                      <p className="whitespace-nowrap">
-                        {data?.banners?.map?.((b) => {
-                          if (b.id == order.banner) return <>{b?.name}</>;
-                        })}
-                      </p>
-                      <p>
-                        (
-                        {order?.banner_side === "both_sides"
-                          ? "Ikkala tomon"
-                          : order?.banner_side === "front_side"
-                          ? "Old tomon"
-                          : order?.banner_side === "back_side"
-                          ? "Orqa tomon"
-                          : ""}
-                        )
-                      </p>
-                    </td>
-                    <td>{order?.company}</td>
-                    <td>{order?.full_payment}</td>
-                    <td>{order?.paid_payment}</td>
-                    <td>{order?.created_date.slice(0, 10)}</td>
-                    <td>{order?.start_date.slice(0, 16).replace("T", " ")}</td>
-                    <td>{order?.end_date.slice(0, 16).replace("T", " ")}</td>
-                    <td>
-                      <button
-                        className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
-                        data-tip="Tahrirlash"
-                        onClick={() => {
-                          setOrderInfo(order);
-                          orderEditModal.current.showModal();
-                        }}
-                      >
-                        <span className="fa-solid fa-edit" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteOrder(order?.id)}
-                        className="tooltip tooltip-error btn btn-error btn-xs md:btn-sm mr-3 text-white normal-case"
-                        data-tip="O'chirish"
-                      >
-                        <span className="fa-solid fa-trash-can" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
-      </div>
-
-      {/* Add order button */}
-      <button
-        onClick={() => orderAddModal.current.showModal()}
-        className="w-16 h-16 btn btn-primary rounded-full fixed bottom-10 right-10"
-      >
-        <span
-          className="absolute bg-cov inset-0 tooltip tooltip-left normal-case"
-          data-tip="Yangi buyurtma"
-        />
-        <span className="fa-solid fa-plus fa-xl" />
-      </button>
 
       {/* Order edit modal */}
       <dialog
