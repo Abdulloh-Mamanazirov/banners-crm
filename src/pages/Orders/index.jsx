@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const index = () => {
+  const orderAddModal = useRef();
   const orderEditModal = useRef();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
@@ -149,13 +149,24 @@ const index = () => {
   return (
     <>
       {/* Add new order */}
-      <div className="mb-5">
-        <h3 className="text-3xl md:text-4xl font-semibold">
-          Yangi buyurtma qo'shish:
-        </h3>
+      <dialog
+        ref={orderAddModal}
+        className="backdrop:bg-black/20 p-3 rounded-xl w-full md:w-2/3"
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-2xl md:text-3xl font-semibold">
+            Yangi buyurtma qo'shish:
+          </h3>
+          <button
+            onClick={() => orderAddModal.current.close()}
+            className="w-8 h-8 mr-3 rounded-full border"
+          >
+            <span className="fa-solid fa-close" />
+          </button>
+        </div>
         <form
           onSubmit={handleAddOrder}
-          className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 items-end"
         >
           <div>
             <label htmlFor="company" className="label">
@@ -293,12 +304,16 @@ const index = () => {
                 "Yuborish"
               )}
             </button>
-            <button type="reset" className="w-2/12 btn btn-error ml-2">
-              <span className="fa-solid fa-arrow-rotate-left" />
+            <button
+              onClick={() => orderAddModal.current.close()}
+              type="reset"
+              className="w-2/12 btn btn-error ml-2"
+            >
+              <span className="fa-solid fa-close" />
             </button>
           </div>
         </form>
-      </div>
+      </dialog>
 
       {/* Orders table */}
       <div className="relative overflow-auto max-h-[90vh] max-w-[88vw]">
@@ -387,6 +402,18 @@ const index = () => {
           </>
         )}
       </div>
+
+      {/* Add order button */}
+      <button
+        onClick={() => orderAddModal.current.showModal()}
+        className="w-16 h-16 btn btn-primary rounded-full fixed bottom-10 right-10"
+      >
+        <span
+          className="absolute bg-cov inset-0 tooltip tooltip-left normal-case"
+          data-tip="Yangi buyurtma"
+        />
+        <span className="fa-solid fa-plus fa-xl" />
+      </button>
 
       {/* Order edit modal */}
       <dialog
