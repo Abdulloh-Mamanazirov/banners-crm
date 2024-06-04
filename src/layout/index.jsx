@@ -39,8 +39,8 @@ const index = ({ content }) => {
                 className="btn btn-active drawer-button relative mb-1 lg:hidden"
               >
                 <span
-                  className="absolute bg-cov inset-0 tooltip tooltip-right"
-                  data-tip="Open sidebar"
+                  className="absolute bg-cov inset-0 tooltip tooltip-right normal-case"
+                  data-tip="Menu"
                 />
                 <span className="fa-regular fa-chart-bar" />
               </label>
@@ -114,8 +114,7 @@ const index = ({ content }) => {
                   }`}
                 >
                   <Link to={"/expense"}>
-                    <span className={"fa-solid fa-coins"} />{" "}
-                    {"Sarf-harajat"}
+                    <span className={"fa-solid fa-coins"} /> {"Sarf-harajat"}
                   </Link>
                 </li>
                 <li
