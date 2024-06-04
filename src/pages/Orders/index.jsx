@@ -326,7 +326,7 @@ const index = () => {
               <tbody>
                 {data?.orders?.length === 0 && (
                   <tr className="text-center">
-                    <td colSpan={6} className="text-center">
+                    <td colSpan={8} className="text-center">
                       <h2 className="text-5xl uppercase font-bold">
                         Bo'm bo'sh
                       </h2>
