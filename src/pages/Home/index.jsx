@@ -52,10 +52,25 @@ const index = () => {
 
   return (
     <>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 items-center gap-3">
-        <Stats img={Billboard} title="Jami Bannerlar" value={stats.banners} />
-        <Stats img={Ad} title="Jami Buyurtmalar" value={stats.orders} />
-        <Stats img={Admin} title="Adminlar" value={stats.admins} />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 items-center gap-3 mt-1">
+        <Stats
+          img={Billboard}
+          title="Jami Bannerlar"
+          value={stats.banners}
+          link={"/banners"}
+        />
+        <Stats
+          img={Ad}
+          title="Jami Buyurtmalar"
+          value={stats.orders}
+          link={"/orders"}
+        />
+        <Stats
+          img={Admin}
+          title="Adminlar"
+          value={stats.admins}
+          link={"/admins"}
+        />
       </div>
       <div className="h-screen mt-5">
         {loading ? (
