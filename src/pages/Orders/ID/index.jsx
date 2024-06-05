@@ -1,19 +1,18 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 const index = () => {
+  const navigate = useNavigate();
   const orderAddModal = useRef();
   const orderEditModal = useRef();
+  const { name } = useParams();
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
-  const [listLoading, setListLoading] = useState(true);
   const [orderInfo, setOrderInfo] = useState();
-  const [data, setData] = useState({
-    orders: [],
-    banners: [],
-    companies: [],
-  });
+  const [banners, setBanners] = useState([]);
 
   async function getBanners() {
     let response = await axios.get("/banners/").catch((err) => {
@@ -21,56 +20,28 @@ const index = () => {
     });
 
     if (response?.status === 200) {
-      return setData((prev) => ({
-        ...prev,
-        banners: response?.data,
-      }));
+      return setBanners(response?.data);
     }
   }
 
-  async function getOrders() {
+  async function getData() {
     let response = await axios
-      .get(`/orders/`)
+      .get(`/orders/?company=${name}`)
       .catch((err) => {
         if (err) {
           return toast("Xatolik!", { type: "error" });
         }
       })
-      .finally(() => setListLoading(false));
+      .finally(() => setLoading(false));
 
     if (response?.status === 200) {
-      return setData((prev) => ({
-        ...prev,
-        orders: response?.data,
-      }));
+      return setData(response?.data);
     }
   }
 
   useEffect(() => {
     getBanners();
-    // getOrders();
-  }, []);
-
-  async function getCompanies() {
-    let response = await axios
-      .get(`/orders/set_of_companies/`)
-      .catch((err) => {
-        if (err) {
-          return toast("Xatolik!", { type: "error" });
-        }
-      })
-      .finally(() => setListLoading(false));
-
-    if (response?.status === 200) {
-      return setData((prev) => ({
-        ...prev,
-        companies: response?.data,
-      }));
-    }
-  }
-
-  useEffect(() => {
-    getCompanies();
+    getData();
   }, []);
 
   async function handleAddOrder(e) {
@@ -110,13 +81,13 @@ const index = () => {
       .finally(() => setButtonLoading(false));
 
     if (response?.status === 201) {
-      getOrders();
+      getData();
       getCompanies();
       orderAddModal.current.close();
       toast("Buyurtma qo'shildi", { type: "success" });
     }
   }
-  /*
+
   async function handleUpdateOrder(e) {
     e.preventDefault();
 
@@ -156,31 +127,28 @@ const index = () => {
       });
 
     if (response?.status === 200) {
-      getOrders();
+      getData();
       orderEditModal.current.close();
       return toast("Buyurtma tahrirlandi!", { type: "info" });
     }
   }
-  */
 
-  /*
   async function handleDeleteOrder(id) {
     let response = await axios.delete(`/orders/${id}/`).catch((err) => {
       if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
     });
     if (response.status === 204) {
       toast("Buyurtma o'chirildi", { type: "info" });
-      return getOrders();
+      return getData();
     }
   }
-  */
 
   return (
-    <>
-      <h3 className="text-2xl font-medium mb-5">Kompaniyalar ro'yxati</h3>
+    <div>
+      <h3 className="text-2xl font-medium mb-5">Buyurtmalar jadvali</h3>
       {/* Orders table */}
-      {/* <div className="relative overflow-auto max-h-[90vh] max-w-[88vw]">
-        {listLoading ? (
+      <div className="relative overflow-auto max-h-[90vh] max-w-[96vw]">
+        {loading ? (
           <div className="text-center">
             <span className="loading loading-bars loading-lg" />
             <p>Buyurtmalar yuklanmoqda...</p>
@@ -202,7 +170,7 @@ const index = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.orders?.length === 0 && (
+                {data?.length === 0 && (
                   <tr className="text-center">
                     <td colSpan={8} className="text-center">
                       <h2 className="text-5xl uppercase font-bold">
@@ -212,13 +180,38 @@ const index = () => {
                     </td>
                   </tr>
                 )}
-                {data?.orders?.map?.((order, ind) => (
-                  <tr className="hover" key={ind}>
-                    <th>{ind + 1}</th>
-                    <td>
+                {data?.map?.((order, ind) => (
+                  <tr className="hover cursor-pointer" key={ind}>
+                    <th
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {ind + 1}
+                    </th>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
                       <p className="whitespace-nowrap">
-                        {data?.banners?.map?.((b) => {
-                          if (b.id == order.banner) return <>{b?.name}</>;
+                        {banners?.map?.((b) => {
+                          if (b.id == order.banner)
+                            return <p key={b.id}>{b?.name}</p>;
                         })}
                       </p>
                       <p>
@@ -233,12 +226,90 @@ const index = () => {
                         )
                       </p>
                     </td>
-                    <td>{order?.company}</td>
-                    <td>{order?.full_payment}</td>
-                    <td>{order?.paid_payment}</td>
-                    <td>{order?.created_date.slice(0, 10)}</td>
-                    <td>{order?.start_date.slice(0, 16).replace("T", " ")}</td>
-                    <td>{order?.end_date.slice(0, 16).replace("T", " ")}</td>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {order?.company}
+                    </td>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {order?.full_payment}
+                    </td>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {order?.paid_payment}
+                    </td>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {order?.created_date.slice(0, 10)}
+                    </td>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {order?.start_date.slice(0, 16).replace("T", " ")}
+                    </td>
+                    <td
+                      onClick={() =>
+                        navigate(`/orders/payment/${order.id}`, {
+                          state: {
+                            banner_name: banners?.filter(
+                              (i) => i.id == order.banner
+                            )?.[0].name,
+                            ...order,
+                          },
+                        })
+                      }
+                    >
+                      {order?.end_date.slice(0, 16).replace("T", " ")}
+                    </td>
                     <td>
                       <button
                         className="tooltip tooltip-info btn btn-info btn-xs md:btn-sm mr-3 text-white normal-case my-2 md:my-0"
@@ -264,19 +335,6 @@ const index = () => {
             </table>
           </>
         )}
-      </div> */}
-
-      {/* Companies cards */}
-      <div className="grid grid-cols-3 gap-3">
-        {data?.companies?.map((item, ind) => (
-          <Link
-            key={ind}
-            to={item}
-            className="bg-white border rounded-lg p-3 shadow-lg text-lg"
-          >
-            {item}
-          </Link>
-        ))}
       </div>
 
       {/* Add order button */}
@@ -317,6 +375,8 @@ const index = () => {
             </label>
             <input
               required
+              readOnly
+              value={name}
               type="text"
               name="company"
               id="company"
@@ -347,7 +407,7 @@ const index = () => {
               id="banner_id"
               className="w-full select select-bordered select-primary"
             >
-              {data?.banners?.map?.((banner, ind) => {
+              {banners?.map?.((banner, ind) => {
                 return (
                   <option key={ind} value={banner?.id}>
                     {banner?.name}
@@ -459,7 +519,7 @@ const index = () => {
       </dialog>
 
       {/* Order edit modal */}
-      {/* <dialog
+      <dialog
         ref={orderEditModal}
         className="modal modal-bottom sm:modal-middle"
       >
@@ -504,7 +564,7 @@ const index = () => {
                       className="w-full select select-bordered select-accent select-sm"
                       defaultValue={orderInfo?.banner}
                     >
-                      {data?.banners?.map?.((banner, ind) => {
+                      {banners?.map?.((banner, ind) => {
                         return (
                           <option key={ind} value={banner?.id}>
                             {banner?.name}
@@ -609,8 +669,8 @@ const index = () => {
             </form>
           </div>
         </div>
-      </dialog> */}
-    </>
+      </dialog>
+    </div>
   );
 };
 
