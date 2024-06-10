@@ -46,7 +46,10 @@ const index = () => {
                 key={ind}
                 data={banner}
                 id={banner?.id}
-                img={banner?.banner_image}
+                img={banner?.banner_image?.replace(
+                  "http://localhost:8089/banner_images",
+                  "https://api.jsspm.uz/banner"
+                )}
                 title={banner?.name}
                 state={banner?.is_busy}
                 date={banner?.created_date?.slice(0, 10).replaceAll("-", "/")}
