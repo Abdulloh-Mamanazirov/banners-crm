@@ -52,12 +52,10 @@ const index = ({ data, id, img, title, date }) => {
   }
 
   async function handleDeleteBanner(id) {
-    let response = await axios
-      .delete(`/banner/delete/${sessionStorage.getItem("banner-token")}/${id}`)
-      .catch((err) => {
-        if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
-      });
-    if (response.status === 200) {
+    let response = await axios.delete(`/banners/${id}/`).catch((err) => {
+      if (err) toast("Nimadadir xatolik ketdi!", { type: "error" });
+    });
+    if (response.status >= 200 && response.status < 300) {
       toast("Banner o'chirildi", { type: "info" });
       return dispatch(updateBillboards(billboards - 1));
     }
