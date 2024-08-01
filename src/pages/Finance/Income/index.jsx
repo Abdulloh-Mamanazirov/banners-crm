@@ -1,15 +1,33 @@
 import axios from "axios";
-import { useEffect } from "react";
-import { useState } from "react";
 import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
 import { BarChartYearly } from "../../../components";
 import BarChart from "./BarChart";
+
+const getCompanyNames = (data) => {
+  if (typeof data !== "object" || !data?.[0]) return [];
+  const companies = new Set(data.map((i) => i.company));
+  return [...companies];
+};
+
+const getCompanyBanners = (company, data) => {
+  if (typeof company !== "string") return [];
+  if (typeof data !== "object" || !data?.[0]) return [];
+  const banners = data.filter((i) => i.company === company);
+  return banners.map((i) => ({
+    id: i.id,
+    company: i.company,
+    banner: i.banner.name,
+    banner_side: i.banner_side,
+  }));
+};
 
 const index = () => {
   const [year, setYear] = useState(2024);
   const [btnLoading, setBtnLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
-  const [orders, setOrders] = useState(false);
+  const [orders, setOrders] = useState(null);
+  const [companyName, setCompanyName] = useState("");
   const [stats, setStats] = useState({
     monthly: [],
     payments: [],
@@ -97,8 +115,31 @@ const index = () => {
           className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
         >
           <div>
+            <label htmlFor="company" className="label">
+              Buyurtmachi:
+            </label>
+            <select
+              required
+              name="company"
+              id="company"
+              className="w-full select select-bordered select-primary"
+              onChange={(e) => setCompanyName(e.target.value)}
+            >
+              <option value="" selected disabled>
+                Tanlang
+              </option>
+              {getCompanyNames(orders)?.map?.((order, ind) => {
+                return (
+                  <option key={ind} value={order}>
+                    {order}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div>
             <label htmlFor="client" className="label">
-              Buyurtma:
+              Buyurtmalar:
             </label>
             <select
               required
@@ -106,10 +147,13 @@ const index = () => {
               id="client"
               className="w-full select select-bordered select-primary"
             >
-              {orders?.map?.((order, ind) => {
+              <option value="" selected disabled>
+                Tanlang
+              </option>
+              {getCompanyBanners(companyName, orders)?.map?.((order, ind) => {
                 return (
                   <option key={ind} value={order?.id}>
-                    {order?.company}
+                    {order?.banner}
                   </option>
                 );
               })}
