@@ -245,8 +245,8 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner
-                            )?.[0].name,
+                              (i) => i.id == order.banner?.id
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
@@ -259,8 +259,8 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner
-                            )?.[0].name,
+                              (i) => i.id == order.banner?.id
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
@@ -273,8 +273,8 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner
-                            )?.[0].name,
+                              (i) => i.id == order.banner?.id
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
@@ -287,8 +287,8 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner
-                            )?.[0].name,
+                              (i) => i.id == order.banner?.id
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
@@ -301,8 +301,8 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner
-                            )?.[0].name,
+                              (i) => i.id == order.banner?.id
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
