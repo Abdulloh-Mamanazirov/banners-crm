@@ -188,7 +188,7 @@ const index = () => {
                           state: {
                             banner_name: banners?.filter(
                               (i) => i.id == order.banner
-                            )?.[0].name,
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
@@ -202,7 +202,7 @@ const index = () => {
                           state: {
                             banner_name: banners?.filter(
                               (i) => i.id == order.banner
-                            )?.[0].name,
+                            )?.name,
                             ...order,
                           },
                         })
@@ -210,7 +210,7 @@ const index = () => {
                     >
                       <p className="whitespace-nowrap">
                         {banners?.map?.((b) => {
-                          if (b.id == order.banner)
+                          if (b.id == order.banner.id)
                             return <p key={b.id}>{b?.name}</p>;
                         })}
                       </p>
@@ -232,7 +232,7 @@ const index = () => {
                           state: {
                             banner_name: banners?.filter(
                               (i) => i.id == order.banner
-                            )?.[0].name,
+                            )?.id,
                             ...order,
                           },
                         })
