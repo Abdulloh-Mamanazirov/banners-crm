@@ -19,6 +19,12 @@ const PAGES = [
   },
   {
     id: 4,
+    path: "/companies",
+    title: "Kompaniyalar",
+    iconClass: "fa-solid fa-copyright",
+  },
+  {
+    id: 5,
     path: "/orders",
     title: "Buyurtmalar",
     iconClass: "fa-solid fa-store",
