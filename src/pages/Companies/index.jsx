@@ -35,7 +35,7 @@ const index = () => {
     const data = {
       name: name.value,
       phone_number: phone.value,
-      decription: decription.value,
+      decription: decription?.value ?? "",
     };
 
     const response = await axios
