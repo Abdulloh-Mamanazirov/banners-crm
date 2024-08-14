@@ -13,6 +13,7 @@ import {
   FinanceLogs,
   Expense,
   OrderID,
+  Companies,
   OrderTable,
 } from "./pages";
 import Layout from "./layout";
@@ -45,6 +46,7 @@ function App() {
               <Route path="/orders" element={<Orders />} />
               <Route path="/orders/:name" element={<OrderID />} />
               <Route path="/orders/payment/:id" element={<OrderTable />} />
+              <Route path="/companies" element={<Companies />} />
               <Route path="/income" element={<Income />} />
               <Route path="/outcome" element={<Outcome />} />
               <Route path="/expense" element={<Expense />} />
