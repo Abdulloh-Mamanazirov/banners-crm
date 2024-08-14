@@ -4,30 +4,11 @@ import { useState, useEffect } from "react";
 import { BarChartYearly } from "../../../components";
 import BarChart from "./BarChart";
 
-const getCompanyNames = (data) => {
-  if (typeof data !== "object" || !data?.[0]) return [];
-  const companies = new Set(data.map((i) => i.company));
-  return [...companies];
-};
-
-const getCompanyBanners = (company, data) => {
-  if (typeof company !== "string") return [];
-  if (typeof data !== "object" || !data?.[0]) return [];
-  const banners = data.filter((i) => i.company === company);
-  return banners.map((i) => ({
-    id: i.id,
-    company: i.company,
-    banner: i.banner.name,
-    banner_side: i.banner_side,
-  }));
-};
-
 const index = () => {
   const [year, setYear] = useState(2024);
   const [btnLoading, setBtnLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
-  const [orders, setOrders] = useState(null);
-  const [companyName, setCompanyName] = useState("");
+  const [companies, setCompanies] = useState(null);
   const [stats, setStats] = useState({
     monthly: [],
     payments: [],
@@ -49,13 +30,13 @@ const index = () => {
     }));
   }
 
-  async function getOrders() {
-    let response = await axios.get(`/orders/`).catch((err) => {
+  async function getCompanies() {
+    let response = await axios.get(`/companies/`).catch((err) => {
       if (err) return;
     });
 
     if (response?.status === 200) {
-      return setOrders(response?.data);
+      return setCompanies(response?.data);
     }
   }
 
@@ -64,7 +45,7 @@ const index = () => {
   }, [year]);
 
   useEffect(() => {
-    getOrders();
+    getCompanies();
   }, []);
 
   async function handleAddIncome(e) {
@@ -115,31 +96,8 @@ const index = () => {
           className="grid grid-cols-2 md:grid-cols-3 gap-3 items-end"
         >
           <div>
-            <label htmlFor="company" className="label">
-              Buyurtmachi:
-            </label>
-            <select
-              required
-              name="company"
-              id="company"
-              className="w-full select select-bordered select-primary"
-              onChange={(e) => setCompanyName(e.target.value)}
-            >
-              <option value="" selected disabled>
-                Tanlang
-              </option>
-              {getCompanyNames(orders)?.map?.((order, ind) => {
-                return (
-                  <option key={ind} value={order}>
-                    {order}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div>
             <label htmlFor="client" className="label">
-              Buyurtmalar:
+              Kompaniya:
             </label>
             <select
               required
@@ -150,10 +108,10 @@ const index = () => {
               <option value="" selected disabled>
                 Tanlang
               </option>
-              {getCompanyBanners(companyName, orders)?.map?.((order, ind) => {
+              {companies?.map?.((company, ind) => {
                 return (
-                  <option key={ind} value={order?.id}>
-                    {order?.banner}
+                  <option key={ind} value={company?.id}>
+                    {company?.name}
                   </option>
                 );
               })}
