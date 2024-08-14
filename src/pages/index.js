@@ -5,6 +5,7 @@ import Admins from "./Admins";
 import Orders from "./Orders";
 import OrderID from "./Orders/ID";
 import OrderTable from "./Orders/ID/Table";
+import Companies from "./Companies";
 import NotFound from "./404";
 
 export * from "./Finance";
@@ -17,5 +18,6 @@ export {
   Orders,
   OrderID,
   OrderTable,
+  Companies,
   NotFound,
 };
