@@ -70,7 +70,7 @@ const index = () => {
           data?.map((item, ind) => (
             <Link
               key={ind}
-              to={`/orders/${item?.name}`}
+              to={`/orders/${item?.id}`}
               title={item?.description}
               className="relative bg-white border rounded-lg p-3 shadow-lg"
             >
