@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom"
 import { useEffect, useRef, useState } from "react";
 
 const index = () => {
@@ -67,8 +68,9 @@ const index = () => {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
         {!loading &&
           data?.map((item, ind) => (
-            <div
+            <Link
               key={ind}
+              to={`/orders/${item?.name}`}
               title={item?.description}
               className="relative bg-white border rounded-lg p-3 shadow-lg"
             >
@@ -81,7 +83,7 @@ const index = () => {
                   data-tip={item?.description}
                 />
               )}
-            </div>
+            </Link>
           ))}
       </div>
 
