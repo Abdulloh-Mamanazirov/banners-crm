@@ -1,13 +1,14 @@
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import { useRef, useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useRef, useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 const index = () => {
   const navigate = useNavigate();
   const orderAddModal = useRef();
   const orderEditModal = useRef();
   const { name } = useParams();
+  const { state } = useLocation();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -82,7 +83,6 @@ const index = () => {
 
     if (response?.status === 201) {
       getData();
-      getCompanies();
       orderAddModal.current.close();
       toast("Buyurtma qo'shildi", { type: "success" });
     }
@@ -202,7 +202,7 @@ const index = () => {
                           state: {
                             banner_name: banners?.filter(
                               (i) => i.id == order.banner
-                            )?.name,
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
@@ -210,7 +210,7 @@ const index = () => {
                     >
                       <p className="whitespace-nowrap">
                         {banners?.map?.((b) => {
-                          if (b.id == order.banner.id)
+                          if (b.id == order.banner)
                             return <p key={b.id}>{b?.name}</p>;
                         })}
                       </p>
@@ -232,20 +232,20 @@ const index = () => {
                           state: {
                             banner_name: banners?.filter(
                               (i) => i.id == order.banner
-                            )?.id,
+                            )?.[0]?.name,
                             ...order,
                           },
                         })
                       }
                     >
-                      {order?.company}
+                      {state?.name}
                     </td>
                     <td
                       onClick={() =>
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner?.id
+                              (i) => i.id == order.banner
                             )?.[0]?.name,
                             ...order,
                           },
@@ -259,7 +259,7 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner?.id
+                              (i) => i.id == order.banner
                             )?.[0]?.name,
                             ...order,
                           },
@@ -273,7 +273,7 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner?.id
+                              (i) => i.id == order.banner
                             )?.[0]?.name,
                             ...order,
                           },
@@ -287,7 +287,7 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner?.id
+                              (i) => i.id == order.banner
                             )?.[0]?.name,
                             ...order,
                           },
@@ -301,7 +301,7 @@ const index = () => {
                         navigate(`/orders/payment/${order.id}`, {
                           state: {
                             banner_name: banners?.filter(
-                              (i) => i.id == order.banner?.id
+                              (i) => i.id == order.banner
                             )?.[0]?.name,
                             ...order,
                           },
