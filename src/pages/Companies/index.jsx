@@ -70,6 +70,7 @@ const index = () => {
           data?.map((item, ind) => (
             <Link
               key={ind}
+              state={item}
               to={`/orders/${item?.id}`}
               title={item?.description}
               className="relative bg-white border rounded-lg p-3 shadow-lg"
