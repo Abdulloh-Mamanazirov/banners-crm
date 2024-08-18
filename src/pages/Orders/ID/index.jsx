@@ -252,7 +252,7 @@ const index = () => {
                         })
                       }
                     >
-                      {order?.full_payment}
+                      {Number(order?.full_payment ?? 0).toLocaleString("uz-Uz")}
                     </td>
                     <td
                       onClick={() =>
@@ -266,7 +266,7 @@ const index = () => {
                         })
                       }
                     >
-                      {order?.paid_payment}
+                      {Number(order?.paid_payment ?? 0).toLocaleString("uz-Uz")}
                     </td>
                     <td
                       onClick={() =>

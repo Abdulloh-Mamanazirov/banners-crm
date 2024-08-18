@@ -108,8 +108,12 @@ const Table = () => {
                 </p>
               </td>
               <td>{state?.company}</td>
-              <td>{state?.full_payment}</td>
-              <td>{state?.paid_payment}</td>
+              <td>
+                {Number(state?.full_payment ?? 0).toLocaleString("uz-Uz")}
+              </td>
+              <td>
+                {Number(state?.paid_payment ?? 0).toLocaleString("uz-Uz")}
+              </td>
               <td>{state?.start_date.slice(0, 16).replace("T", " ")}</td>
               <td>{state?.end_date.slice(0, 16).replace("T", " ")}</td>
               <td>
