@@ -73,7 +73,7 @@ const Table = () => {
       });
     }
   }
-  console.log(state);
+
   return (
     <div>
       <div className="mb-10">
