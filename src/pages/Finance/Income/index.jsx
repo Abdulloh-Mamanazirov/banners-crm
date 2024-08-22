@@ -56,11 +56,11 @@ const index = () => {
 
     let data = {
       payment_amount: amount.value,
-      client: client.value,
+      company: client.value,
     };
 
     let response = await axios
-      .post(`/payments/`, data)
+      .post(`/payments/pay_payment/`, data)
       .catch((err) => {
         if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
