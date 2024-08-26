@@ -68,7 +68,7 @@ const index = () => {
       })
       .finally(() => setBtnLoading(false));
 
-    if (response.status === 201) {
+    if (response.status === 200) {
       getData();
       return toast("Kirim muvaffaqiyatli qo'shildi", {
         type: "success",
@@ -221,7 +221,7 @@ const index = () => {
                     <td>
                       {Number(payment?.payment_amount).toLocaleString("uz-Uz")}
                     </td>
-                    <td>{payment?.created_date.slice(0, 10)}</td>
+                    <td>{new Date(payment?.created_date).toLocaleString()}</td>
                     <td>{payment?.admin?.full_name}</td>
                     <td>
                       {/* <button
