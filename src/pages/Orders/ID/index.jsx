@@ -92,8 +92,8 @@ const index = () => {
     e.preventDefault();
 
     let {
-      phone,
-      company,
+      // phone,
+      // company,
       banner_id,
       start_time,
       end_time,
@@ -103,8 +103,8 @@ const index = () => {
       note,
     } = e.target;
     let data = {
-      company: company.value,
-      phone_number: phone.value,
+      // company: company.value,
+      // phone_number: phone.value,
       banner_side: side.value,
       rent_price: price.value,
       start_date: start_time.value,
@@ -533,7 +533,7 @@ const index = () => {
           <form onSubmit={handleUpdateOrder}>
             <table className="table">
               <tbody>
-                <tr>
+                {/* <tr>
                   <th>Buyurtmachi:</th>
                   <td>
                     <input
@@ -554,7 +554,7 @@ const index = () => {
                       defaultValue={orderInfo?.phone_number}
                     />
                   </td>
-                </tr>
+                </tr> */}
                 <tr>
                   <th>Banner:</th>
                   <td>
