@@ -74,14 +74,15 @@ const index = () => {
     let response = await axios
       .post(`/orders/`, data)
       .catch((err) => {
-        if (err) {
+        if (Number(err.response.status) === 500) {
+          return toast("Bu banner (banner tarafi)ga buyurtma mavjud!", { type: "warning" });
+        } else {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setButtonLoading(false));
 
     if (response?.status === 201) {
-      getOrders();
       getCompanies();
       orderAddModal.current.close();
       toast("Buyurtma qo'shildi", { type: "success" });
