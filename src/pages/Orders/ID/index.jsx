@@ -91,6 +91,8 @@ const index = () => {
   async function handleUpdateOrder(e) {
     e.preventDefault();
 
+    let fullData = orderInfo;
+
     let {
       // phone,
       // company,
@@ -118,8 +120,12 @@ const index = () => {
       Object.entries(data).filter(([key, value]) => !!value)
     );
 
+    Object.entries(cleanedObj).forEach(([name, value]) => {
+      fullData[name] = value;
+    });
+
     let response = await axios
-      .patch(`/orders/${orderInfo?.id}/`, cleanedObj)
+      .patch(`/orders/${orderInfo?.id}/`, fullData)
       .catch((err) => {
         if (err) {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
@@ -562,8 +568,10 @@ const index = () => {
                       name="banner_id"
                       id="banner_id"
                       className="w-full select select-bordered select-accent select-sm"
-                      defaultValue={orderInfo?.banner}
                     >
+                      <option value="" selected disabled>
+                        Tanlang
+                      </option>
                       {banners?.map?.((banner, ind) => {
                         return (
                           <option key={ind} value={banner?.id}>
@@ -581,8 +589,10 @@ const index = () => {
                       name="side"
                       id="side"
                       className="w-full select select-bordered select-accent select-sm"
-                      defaultValue={orderInfo?.banner_side}
                     >
+                      <option value="" selected disabled>
+                        Tanlang
+                      </option>
                       <option value="both_sides">Ikkala tarafi</option>
                       <option value="front_side">Old tarafi</option>
                       <option value="back_side">Orqa tarafi</option>
@@ -630,8 +640,10 @@ const index = () => {
                     name="order_status"
                     id="order_status"
                     className="w-full select select-bordered select-accent select-sm"
-                    defaultValue={orderInfo?.order_status}
                   >
+                    <option value="" selected disabled>
+                      Tanlang
+                    </option>
                     <option value="ongoing_rent">Davom etayotgan</option>
                     <option value="planning_rent">Rejalashtirilgan</option>
                     <option value="finished_rent">Tugatilgan</option>
