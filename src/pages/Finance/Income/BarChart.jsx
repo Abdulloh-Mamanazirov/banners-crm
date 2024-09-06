@@ -89,7 +89,7 @@ const index = ({ monthly, title, color }) => {
                 // const label = monthly_data.datasets[datasetIndex].label;
                 // const value = monthly_data.datasets[datasetIndex].data[index];
                 modalRef.current.showModal();
-                setModalData(index - 1);
+                setModalData(index + 1);
               }
             },
           }}
