@@ -82,9 +82,7 @@ const index = () => {
       })
       .finally(() => setButtonLoading(false));
 
-    if (response?.status === 201) {
-      getCompanies();
-      orderAddModal.current.close();
+    if (response?.status === 201 || response?.status === 200) {
       toast("Buyurtma qo'shildi", { type: "success" });
     }
   }
