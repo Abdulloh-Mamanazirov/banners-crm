@@ -168,7 +168,7 @@ const index = () => {
         <div>
           <BarChartYearly
             title={"Chiqim"}
-            color={"darkred"}
+            color={"rgb(239 68 68)"}
             yearly={stats?.monthly}
           />
         </div>

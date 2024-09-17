@@ -43,14 +43,14 @@ const index = ({ monthly, title, color }) => {
     datasets: [
       {
         label: "To'langan",
-        backgroundColor: "darkblue",
+        backgroundColor: "rgb(34 197 94)",
         data: monthly.paid_payment,
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
       {
         label: "To'lanishi kerak",
-        backgroundColor: "blue",
+        backgroundColor: "rgb(239 68 68)",
         data: Object.values(monthly.you_need_this ?? {}),
         categoryPercentage: 0.9,
         barPercentage: 1,
