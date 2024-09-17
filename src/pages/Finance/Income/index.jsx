@@ -191,7 +191,7 @@ const index = () => {
               <thead>
                 <tr className="bg-base-200 md:text-sm">
                   <th>#</th>
-                  {/* <th>Buyurtmachi</th> */}
+                  <th>Buyurtmachi</th>
                   <th>Qiymat</th>
                   <th>Qo'shilgan sana</th>
                   <th>Qo'shgan admin</th>
@@ -212,12 +212,7 @@ const index = () => {
                 {stats?.payments?.map?.((payment, ind) => (
                   <tr className="hover" key={ind}>
                     <th>{ind + 1}</th>
-                    {/* <td>
-                      {companies?.map?.(
-                        (company) =>
-                          company?.id === payment?.client && order?.company
-                      )}
-                    </td> */}
+                    <td>{payment?.company_name}</td>
                     <td>
                       {Number(payment?.payment_amount).toLocaleString("uz-Uz")}
                     </td>
