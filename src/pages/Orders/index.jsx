@@ -75,16 +75,38 @@ const index = () => {
       .post(`/orders/`, data)
       .catch((err) => {
         if (Number(err.response.status) === 500) {
-          return toast("Bu banner (banner tarafi)ga buyurtma mavjud!", { type: "warning" });
+          return toast("Bu banner (banner tarafi)ga buyurtma mavjud!", {
+            type: "warning",
+          });
         } else {
           return toast("Nimadadir xatolik ketdi!", { type: "error" });
         }
       })
       .finally(() => setButtonLoading(false));
 
-    if (response?.status === 201 || response?.status === 200) {
+    if (response?.status >= 200 && response?.status <= 300) {
       toast("Buyurtma qo'shildi", { type: "success" });
     }
+  }
+
+  function sortBannersByName(banners) {
+    return banners.sort((a, b) => {
+      const nameA = a.name;
+      const nameB = b.name;
+
+      // Check if names start with a number
+      const isNumberA = /^\d/.test(nameA);
+      const isNumberB = /^\d/.test(nameB);
+
+      if (isNumberA && !isNumberB) {
+        return -1;
+      }
+      if (!isNumberA && isNumberB) {
+        return 1;
+      }
+
+      return nameA.localeCompare(nameB);
+    });
   }
 
   return (
@@ -131,7 +153,7 @@ const index = () => {
               Tanlang
             </option>
 
-            {data?.banners?.map?.((banner, ind) => {
+            {sortBannersByName(data?.banners)?.map?.((banner, ind) => {
               return (
                 <option key={ind} value={banner?.id}>
                   {banner?.name}
