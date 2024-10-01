@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { BannerCard } from "../../../components";
+import { BannerCard, BannerStatsChart } from "../../../components";
 import { updateBillboards } from "../../../redux";
 
 const index = () => {
@@ -34,6 +34,9 @@ const index = () => {
 
   return (
     <div className="relative">
+      <div className="mb-3">
+        <BannerStatsChart />
+      </div>
       {/* <div className="mb-3">
         <h3 className="text-3xl md:text-4xl font-semibold">Search Banners:</h3>
         <div></div>
