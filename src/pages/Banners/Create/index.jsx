@@ -24,7 +24,7 @@ const index = () => {
     e.preventDefault();
     setLoading(true);
 
-    let { lat, lng, name, type, banner_id } = e.target;
+    let { lat, lng, name, type, banner_id, yuriy_face } = e.target;
 
     let data = new FormData();
     data.append("name", name.value);
@@ -33,6 +33,7 @@ const index = () => {
     data.append("banner_image", images.formImage);
     data.append("banner_type", type.value);
     data.append("banner_id", banner_id.value);
+    data.append("yuriy_face", yuriy_face.value);
 
     let response = await axios
       .post("/banners/", data)
@@ -162,6 +163,21 @@ const index = () => {
                 id="banner_id"
                 title="Banner Id kiriting"
                 placeholder="Banner id"
+                className="w-full input input-bordered input-primary"
+              />
+            </div>
+            <div>
+              <label htmlFor="yuriy_face" className="label">
+                <p>
+                  Yuzi (m<sup>2</sup>):
+                </p>
+              </label>
+              <input
+                required
+                type="text"
+                name="yuriy_face"
+                id="yuriy_face"
+                title="Banner yuzini kiriting"
                 className="w-full input input-bordered input-primary"
               />
             </div>
