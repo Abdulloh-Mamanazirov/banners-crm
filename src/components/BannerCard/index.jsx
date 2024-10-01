@@ -21,7 +21,7 @@ const index = ({ data, id, img, title, date }) => {
     e.preventDefault();
     setLoading(true);
 
-    let { lat, lng, name, type, banner_id } = e.target;
+    let { lat, lng, name, type, banner_id, yuriy_face } = e.target;
 
     let data = new FormData();
     data.append("name", name.value);
@@ -29,6 +29,7 @@ const index = ({ data, id, img, title, date }) => {
     data.append("longitude", lng.value);
     data.append("banner_type", type.value);
     data.append("banner_id", banner_id.value);
+    data.append("yuriy_face", yuriy_face.value);
     if (sendingImage) data.append("banner_image", sendingImage);
 
     let response = await axios
@@ -109,10 +110,7 @@ const index = ({ data, id, img, title, date }) => {
         </div>
         <div className="max-w-full border rounded-lg">
           <img
-            src={img.replace(
-              "http://localhost:8063",
-              "https://api.jsspm.uz"
-            )}
+            src={img.replace("http://localhost:8089", "https://api.jsspm.uz")}
             alt="billboard image"
             className="w-full aspect-square object-cover rounded-lg"
           />
@@ -133,7 +131,7 @@ const index = ({ data, id, img, title, date }) => {
           <h3 className="font-bold text-lg mb-3">Banner Info</h3>
           <div className="max-w-full border rounded-lg">
             <img
-              src={img}
+              src={img.replace("http://localhost:8089", "https://api.jsspm.uz")}
               alt="banner image"
               className="w-full aspect-video object-cover rounded-lg"
             />
@@ -148,6 +146,16 @@ const index = ({ data, id, img, title, date }) => {
                 <tr>
                   <th>Nomi:</th>
                   <td>{data?.name}</td>
+                </tr>
+                <tr>
+                  <th>Yuzi:</th>
+                  <td>
+                    {data?.yuriy_face && (
+                      <p>
+                        {data?.yuriy_face} m<sup>2</sup>
+                      </p>
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th>Banner turi:</th>
@@ -264,6 +272,17 @@ const index = ({ data, id, img, title, date }) => {
                       type="text"
                       defaultValue={data?.name}
                       name="name"
+                      className="w-full sm:w-auto input input-bordered input-accent input-sm"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <th>Yuzi:</th>
+                  <td>
+                    <input
+                      type="number"
+                      defaultValue={data?.yuriy_face}
+                      name="yuriy_face"
                       className="w-full sm:w-auto input input-bordered input-accent input-sm"
                     />
                   </td>
