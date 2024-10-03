@@ -43,7 +43,7 @@ const index = () => {
   useEffect(() => {
     getData();
   }, [year]);
-
+console.log(data)
   const chart_data = {
     labels: data?.julius_caesar?.map((_, ind) => months[ind]),
     datasets: [
