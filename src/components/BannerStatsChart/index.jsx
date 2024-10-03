@@ -43,14 +43,14 @@ const index = () => {
   useEffect(() => {
     getData();
   }, [year]);
-console.log(data)
+
   const chart_data = {
     labels: data?.julius_caesar?.map((_, ind) => months[ind]),
     datasets: [
       {
         label: "Band %",
         backgroundColor: "rgb(34 197 94)",
-        data: data.julius_caesar,
+        data: data.julius_caesar?.map((i) => Number(i).toFixed(2)),
         categoryPercentage: 0.9,
         barPercentage: 1,
       },
