@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { BarChartYearly } from "../../../components";
 import BarChart from "./BarChart";
+import DataTable from "./DataTable";
 
 const index = () => {
   const [year, setYear] = useState(2024);
@@ -147,19 +148,24 @@ const index = () => {
         </form>
       </div>
 
-      {/* year filter */}
-      <div className="flex items-center gap-2">
-        <label htmlFor="year">Filter:</label>
-        <input
-          name="year"
-          id="year"
-          className="border rounded-md py-1 px-2"
-          type="number"
-          min="2022"
-          step="1"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        />
+      {/* year filter & download pdf */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <label htmlFor="year">Filter:</label>
+          <input
+            name="year"
+            id="year"
+            className="border rounded-md py-1 px-2"
+            type="number"
+            min="2022"
+            step="1"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          />
+        </div>
+        <div>
+          <DataTable year={year} data={stats?.monthly?.hh} />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2">
