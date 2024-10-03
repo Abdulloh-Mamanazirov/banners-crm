@@ -110,7 +110,7 @@ const index = ({ data, id, img, title, date }) => {
         </div>
         <div className="max-w-full border rounded-lg">
           <img
-            src={img.replace("http://localhost:8089", "https://api.jsspm.uz")}
+            src={img.replace("http://localhost:8063", "https://api.jsspm.uz")}
             alt="billboard image"
             className="w-full aspect-square object-cover rounded-lg"
           />
@@ -131,7 +131,7 @@ const index = ({ data, id, img, title, date }) => {
           <h3 className="font-bold text-lg mb-3">Banner Info</h3>
           <div className="max-w-full border rounded-lg">
             <img
-              src={img.replace("http://localhost:8089", "https://api.jsspm.uz")}
+              src={img.replace("http://localhost:8063", "https://api.jsspm.uz")}
               alt="banner image"
               className="w-full aspect-video object-cover rounded-lg"
             />
