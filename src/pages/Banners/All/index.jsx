@@ -66,7 +66,7 @@ const index = () => {
         </div>
       )}
       {!loading && banners?.length === 0 && (
-        <div className="absolute inset-0 grid place-items-center">
+        <div className="w-full grid place-items-center">
           <div className="text-center">
             <h2 className="text-5xl uppercase font-bold">Bo'sh</h2>
             <p>Bannerlar mavjud emas</p>
