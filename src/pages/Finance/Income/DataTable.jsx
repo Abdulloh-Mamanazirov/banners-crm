@@ -2,13 +2,93 @@ import React, { useRef } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
+// Function to check if a string contains Cyrillic characters
+const containsCyrillic = (text) => /[А-Яа-яЁё]/.test(text);
+
+// Function to convert Cyrillic to Latin
+const cyrillicToLatin = (text) => {
+  const cyrillicToLatinMap = {
+    А: "A",
+    Б: "B",
+    В: "V",
+    Г: "G",
+    Д: "D",
+    Е: "E",
+    Ё: "Yo",
+    Ж: "J",
+    З: "Z",
+    И: "I",
+    Й: "Y",
+    К: "K",
+    Л: "L",
+    М: "M",
+    Н: "N",
+    О: "O",
+    П: "P",
+    Р: "R",
+    С: "S",
+    Т: "T",
+    У: "U",
+    Ф: "F",
+    Х: "X",
+    Ц: "Ts",
+    Ч: "Ch",
+    Ш: "Sh",
+    Щ: "Sh",
+    Ъ: "",
+    Ы: "Y",
+    Ь: "",
+    Э: "E",
+    Ю: "Yu",
+    Я: "Ya",
+    а: "a",
+    б: "b",
+    в: "v",
+    г: "g",
+    д: "d",
+    е: "e",
+    ё: "yo",
+    ж: "j",
+    з: "z",
+    и: "i",
+    й: "y",
+    к: "k",
+    л: "l",
+    м: "m",
+    н: "n",
+    о: "o",
+    п: "p",
+    р: "r",
+    с: "s",
+    т: "t",
+    у: "u",
+    ф: "f",
+    х: "x",
+    ц: "ts",
+    ч: "ch",
+    ш: "sh",
+    щ: "sh",
+    ъ: "",
+    ы: "y",
+    ь: "",
+    э: "e",
+    ю: "yu",
+    я: "ya",
+  };
+
+  return text
+    .split("")
+    .map((char) => cyrillicToLatinMap[char] || char)
+    .join("");
+};
+
 const DataTable = ({ data, year }) => {
   const tableRef = useRef();
 
   if (!data) return null;
 
   const generatePDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF("landscape");
 
     // Add header
     doc.setFontSize(18);
@@ -21,6 +101,11 @@ const DataTable = ({ data, year }) => {
       theme: "grid",
       headStyles: { fillColor: [22, 160, 133] },
       styles: { fontSize: 8 },
+      didParseCell: (data) => {
+        if (containsCyrillic(data.cell.text[0])) {
+          data.cell.text = data.cell.text.map(cyrillicToLatin);
+        }
+      },
     });
 
     doc.save(`Qarzdorlar ${new Date().toString("uz-Uz")}.pdf`);
@@ -98,7 +183,9 @@ const DataTable = ({ data, year }) => {
           {tableRows.map((row, index) => (
             <tr key={index}>
               {row.map((cell, cellIndex) => (
-                <td key={cellIndex}>{cell}</td>
+                <td key={cellIndex}>
+                  {containsCyrillic(cell) ? cyrillicToLatin(cell) : cell}
+                </td>
               ))}
             </tr>
           ))}
