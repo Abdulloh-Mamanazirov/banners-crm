@@ -128,6 +128,7 @@ const DataTable = ({ data, year }) => {
 
   const processData = () => {
     const aggregatedData = {};
+    const totalSums = new Array(12).fill(0);
 
     Object.keys(data).forEach((month) => {
       Object.keys(data[month]).forEach((company) => {
@@ -140,6 +141,7 @@ const DataTable = ({ data, year }) => {
           0
         );
         aggregatedData[company][monthIndex] += totalDebt;
+        totalSums[monthIndex] += totalDebt;
       });
     });
 
@@ -155,6 +157,15 @@ const DataTable = ({ data, year }) => {
       });
       tableRows.push(rowData);
     });
+
+    // Add the total sums row
+    const totalRow = new Array(14).fill("");
+    totalRow[0] = "";
+    totalRow[1] = "Jami:";
+    totalSums.forEach((sum, index) => {
+      totalRow[index + 2] = sum.toLocaleString("uz-Uz");
+    });
+    tableRows.push(totalRow);
 
     return tableRows;
   };
