@@ -103,7 +103,7 @@ const index = ({ monthly, title, color }) => {
         className="bg-white p-3 border rounded-lg backdrop:bg-black/30 md:w-1/3"
       >
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h3 className="font-medium text-lg">{getMonth(modalData + 1)} oyi</h3>
+          <h3 className="font-medium text-lg">{getMonth(modalData)} oyi</h3>
           <button
             onClick={() => {
               setModalData(null);
@@ -126,16 +126,17 @@ const index = ({ monthly, title, color }) => {
             <tbody>
               {monthly?.hh?.[modalData] &&
                 Object.entries(monthly?.hh?.[modalData])?.map?.(
-                  ([name, payments], ind) => (
-                    <tr key={ind}>
-                      <td className="border p-1">{name}</td>
-                      <td className="border p-1">
-                        {Number(
-                          payments.reduce((a, b) => a + b, 0)
-                        ).toLocaleString("uz-Uz")}
-                      </td>
-                    </tr>
-                  )
+                  ([name, payments], ind) =>
+                    Number(payments.reduce((a, b) => a + b, 0)) !== 0 && (
+                      <tr key={ind}>
+                        <td className="border p-1">{name}</td>
+                        <td className="border p-1">
+                          {Number(
+                            payments.reduce((a, b) => a + b, 0)
+                          ).toLocaleString("uz-Uz")}
+                        </td>
+                      </tr>
+                    )
                 )}
             </tbody>
           </table>
