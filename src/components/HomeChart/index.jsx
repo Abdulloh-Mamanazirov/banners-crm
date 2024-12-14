@@ -124,14 +124,17 @@ const index = ({ monthly, title, color }) => {
               </tr>
             </thead>
             <tbody>
-              {monthly?.hh?.[modalData]?.map?.((item, ind) => (
-                <tr key={ind}>
-                  <td className="border p-1">{item?.label}</td>
-                  <td className="border p-1">
-                    {Number(item?.data).toLocaleString("uz-Uz")}
-                  </td>
-                </tr>
-              ))}
+              {monthly?.hh?.[modalData]?.map?.(
+                (item, ind) =>
+                  Number(item?.data) !== 0 && (
+                    <tr key={ind}>
+                      <td className="border p-1">{item?.label}</td>
+                      <td className="border p-1">
+                        {Number(item?.data).toLocaleString("uz-Uz")}
+                      </td>
+                    </tr>
+                  )
+              )}
             </tbody>
           </table>
         </div>
