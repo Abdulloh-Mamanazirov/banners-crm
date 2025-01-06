@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { BarChart, BarChartYearly } from "../../../components";
+import DataTable from "./DataTable";
 
 const index = () => {
   const [year, setYear] = useState(2024);
@@ -155,6 +156,9 @@ const index = () => {
           value={year}
           onChange={(e) => setYear(e.target.value)}
         />
+        <div>
+          <DataTable year={year} data={stats?.monthly?.hh} />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2">
