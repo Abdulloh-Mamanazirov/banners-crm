@@ -6,7 +6,7 @@ import { BarChart, BarChartYearly } from "../../../components";
 import DataTable from "./DataTable";
 
 const index = () => {
-  const [year, setYear] = useState(2024);
+  const [year, setYear] = useState(new Date().getFullYear());
   const [expenses, setExpenses] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);

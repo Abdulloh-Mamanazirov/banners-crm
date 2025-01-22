@@ -130,16 +130,12 @@ const DataTable = ({ data, year }) => {
     const aggregatedData = {};
     const totalSums = new Array(12).fill(0);
 
-    Object.keys(data).forEach((month) => {
-      Object.keys(data[month]).forEach((company) => {
+    data.forEach((monthData, monthIndex) => {
+      monthData.forEach((companyData) => {
+        const { label: company, data: totalDebt } = companyData;
         if (!aggregatedData[company]) {
           aggregatedData[company] = new Array(12).fill(0);
         }
-        const monthIndex = parseInt(month) - 1;
-        const totalDebt = data[month][company].reduce(
-          (acc, val) => acc + val,
-          0
-        );
         aggregatedData[company][monthIndex] += totalDebt;
         totalSums[monthIndex] += totalDebt;
       });
