@@ -92,7 +92,7 @@ const DataTable = ({ data, year }) => {
 
     // Add header
     doc.setFontSize(18);
-    doc.text("Qarzdorlar " + year, 14, 15);
+    doc.text("Kirim " + year, 14, 15);
 
     // Add table
     doc.autoTable({
@@ -108,7 +108,7 @@ const DataTable = ({ data, year }) => {
       },
     });
 
-    doc.save(`Qarzdorlar ${new Date().toString("uz-Uz")}.pdf`);
+    doc.save(`Kirim ${new Date().toString("uz-Uz")}.pdf`);
   };
 
   const months = [
@@ -153,7 +153,7 @@ const DataTable = ({ data, year }) => {
       rowData[0] = rowIndex++;
       rowData[1] = company;
       aggregatedData[company].forEach((debt, index) => {
-        rowData[index + 2] = debt.toLocaleString("uz-Uz");
+        rowData[index + 2] = debt;
       });
       tableRows.push(rowData);
     });
@@ -178,7 +178,7 @@ const DataTable = ({ data, year }) => {
         onClick={generatePDF}
         className="border rounded-lg px-3 py-1 bg-red-500 text-white hover:bg-red-600 active:scale-95"
       >
-        Qarzdorlar <span className="fa-solid fa-file-pdf" />
+        Kirimlar <span className="fa-solid fa-file-pdf" />
       </button>
       <table ref={tableRef} border="1" className="hidden">
         <thead>
@@ -191,15 +191,26 @@ const DataTable = ({ data, year }) => {
           </tr>
         </thead>
         <tbody>
-          {tableRows.map((row, index) => (
-            <tr key={index}>
-              {row.map((cell, cellIndex) => (
-                <td key={cellIndex}>
-                  {containsCyrillic(cell) ? cyrillicToLatin(cell) : cell}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {tableRows
+            .sort(
+              (a, b) =>
+                b?.reduce((d, e) => !isNaN(e) && +d + +e, 0) -
+                a?.reduce((d, e) => !isNaN(e) && +d + +e, 0)
+            )
+            .map((row, index) => {
+              row[0] = index + 1;
+              return (
+                <tr key={index}>
+                  {row.map((cell, cellIndex) => (
+                    <td key={cellIndex}>
+                      {containsCyrillic(cell)
+                        ? cyrillicToLatin(cell)
+                        : cell.toLocaleString("uz-Uz")}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>

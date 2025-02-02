@@ -144,18 +144,20 @@ const index = () => {
       </div>
 
       {/* year filter */}
-      <div className="flex items-center gap-2">
-        <label htmlFor="year">Filter:</label>
-        <input
-          name="year"
-          id="year"
-          className="border rounded-md py-1 px-2"
-          type="number"
-          min="2022"
-          step="1"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        />
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <label htmlFor="year">Filter:</label>
+          <input
+            name="year"
+            id="year"
+            className="border rounded-md py-1 px-2"
+            type="number"
+            min="2022"
+            step="1"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          />
+        </div>
         <div>
           <DataTable year={year} data={stats?.monthly?.hh} />
         </div>
